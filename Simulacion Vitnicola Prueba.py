@@ -116,7 +116,7 @@ def revisar_dia(dia_actual):
     return [cosechable,optimo]
 
 
-#numpy
+#numpy ver como agregar
 
 seed(20)
 fechas=[]
