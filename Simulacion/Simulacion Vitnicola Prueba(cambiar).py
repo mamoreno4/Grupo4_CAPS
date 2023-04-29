@@ -3,7 +3,10 @@ from random import uniform, random, seed, randint, gauss
 import numpy as np
 import pandas as pd
 import time as tm
-
+#revisar que se queda
+#quitar tiempos? Simulacion motecarlo?
+#clases se quedan?
+#dejar cuartel? como revisar cepas? clase o al inciar simulacion?
 class Cuartel:
     def __init__(self, listav,cosecha_aproximada):
         self.id=listav[0]
@@ -21,9 +24,11 @@ class Cuartel:
         pass
     def __str__(self):
         return "-> {}".format(self.id)
-class Grupo_trabajador:
-    def __init__(self,lista_valores):
-        pass
+#trabajadores no se quedan, quitar
+#class Grupo_trabajador:
+ #   def __init__(self,lista_valores):
+  #      pass
+#dejar bodega?
 class Bodega:
     def __init__(self,ubicacion):
         self.ubicacion=lista_valores[0]
@@ -45,7 +50,7 @@ class Bodega:
             else:
                 pass
 
-
+#tanques?
 class Tanques:
     def __init__(self,capacidad):
         self.capacidad=capacidad
@@ -67,6 +72,7 @@ class Tanques:
         
     def generar_dia(self,variedad):
         pass
+#dejar vitnicola?
 class Vitnicola:
     def __init__(self, tiempo_simulacion):
         pass
@@ -96,7 +102,7 @@ class Vitnicola:
                 self.dia_termina()
     def show(self):
         pass
-    
+#dia no nesesario?
 def revisar_dia(dia_actual):
     dia=dia_actual
     cosechable=[]
@@ -116,8 +122,8 @@ def revisar_dia(dia_actual):
     return [cosechable,optimo]
 
 
-#numpy ver como
-
+#numpy ver si vale la pena? primera intancia parece que si
+# dejar de usar datetime?
 seed(20)
 fechas=[]
 inicial = datetime(2019, 1, 1)

@@ -5,7 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import math
-
+# Ver si poner todo en una lista o excel 
+#Leer excel
+#Iniciar  distr
+#Cosechas
 df = pd.read_excel('Datos.xlsx', sheet_name='Hoja1')
 
 x = np.array(df)
