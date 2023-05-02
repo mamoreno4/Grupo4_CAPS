@@ -41,7 +41,6 @@ class Bodega:
             disp.append([i,i.capacidad])
         return disp
 
-#tanques?
 class Tanque:
     def __init__(self,capacidad):
         self.capacidad=capacidad
