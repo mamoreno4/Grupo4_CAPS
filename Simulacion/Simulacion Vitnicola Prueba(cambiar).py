@@ -10,18 +10,9 @@ import time as tm
 class Cuartel:
     def __init__(self, listav,cosecha_aproximada):
         self.id=listav[0]
-        self.dia_opt=listav[1]
-        self.dia_ini=listav[2]
-        self.dia_final=listav[3]
         self.variedad=listav[4]
         self.precio=listav[5]
-        self.prod=listav[7]
-        self.cantidad=cosecha_aproximada
-
-    def actualizar_cosecha(self,cosechado):
-        pass
-    def posible_cosechar(self,dia_actual):
-        pass
+        self.cantidad_dia=cosecha_aproximada
     def __str__(self):
         return "-> {}".format(self.id)
 #trabajadores no se quedan, quitar
@@ -39,7 +30,7 @@ class Bodega:
     def agregar_tanque(self,tanque):
         self.tanques.append(tanque)
         pass
-    def revisar_tanques(self):
+    def revisar_tanques(self,dia):
         self.tanques_disponibles=[]
         self.tanques_fermentando=[]
         for i in self.tanques:
@@ -49,88 +40,86 @@ class Bodega:
                 self.tanques_fermentando.append(i)
             else:
                 pass
+    def tanques_disponibles(self):
+        pass
 
 #tanques?
-class Tanques:
+class Tanque:
     def __init__(self,capacidad):
         self.capacidad=capacidad
         self.estado="Disponible"
+        self.dia_inicial=0
         self.dia_termino=0
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         pass
-    def fermentar(self,cantidad,dia):
+    def fermentar(self,cantidad,dia,variedad):
         self.estado="Fermentando"
+        self.dia_inicial=dia
         self.cantidad_fermentado=cantidad
-        dia_aprox=7
-        self.dia_termino=dia+timedelta(days=dia_aprox)
+        self.variedad_fermentando=""
+        self.dia_termino=self.generar_dia(variedad)
     def vaciar_tanque(self):
         fermentado=[self.cantidad_fermentado,self.variedad_fermentando]
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
+        self.dia_inicial=0
+        self.dia_termino=0
         return fermentado
-        
     def generar_dia(self,variedad):
         pass
-#dejar vitnicola?
-class Vitnicola:
-    def __init__(self, tiempo_simulacion):
-        pass
-    @property
-    def proximo_evento(self):
-        evento=1
-        return evento
-    def dia_inicia(self):
-        pass
-    def dia_termina(self):
-        pass
-    def agregar_cuarteles(self,listas_valores):
-        pass
-    def agregar_trabajadores(self,listas_valores):
-        pass
-    def agregar_bodegas(self,listas_valores):
-        pass
-    def run(self):
-        while self.tiempo_actual < self.tiempo_maximo:
-            evento = self.proximo_evento
-            if evento == "fin":
-                self.tiempo_actual = self.tiempo_maximo
-                break
-            elif evento == "Dia_inicia":
-                self.dia_inicia()
-            elif evento == "Dia_termina":
-                self.dia_termina()
-    def show(self):
-        pass
-#dia no nesesario?
-def revisar_dia(dia_actual):
-    dia=dia_actual
-    cosechable=[]
-    optimo=[]
-    for i in range(0,60):
-        r=dia==df_id["día óptimo"][i]
-        if r is True:
-            optimo.append(df_id.iloc[i][0])
-        else:
-            r=dia>=df_id["día inicial"][i]
-            if r is True:
-                r=dia<=df_id["día final"][i]
-                if r is True:
-                    cosechable.append(df_id.iloc[i][0])
-                else:
-                    pass
-    return [cosechable,optimo]
+
+
+
+
+
+
+
 
 
 #numpy ver si vale la pena? primera intancia parece que si
-# dejar de usar datetime?
-seed(20)
-fechas=[]
-inicial = datetime(2019, 1, 1)
-dia_actual= datetime(2019, 1, 1)
-df = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
-df_id=df.iloc[0:60,[1,2,3,4,5,6,7,8,9,10,11]]
-for i in range(0,60):
-    for x in range(1,4):
-        df_id.iloc[i,[x]]=inicial+timedelta(days=df_id.iloc[i,x])
 
+
+#Crear clases (Cuarteles,Bodegas,Tanques,Resumen)
+    #Bodegas
+        #revisar tanques
+        #tanques disponibles(return que tanque con que capacidad esta disponible)
+    #Tanques
+        #generar dia
+        #revisar tanques(llamar vaciar tanques)
+    #Resumen
+        #crear estructura
+
+#Leer datos
+    #Leer excel
+        #Poblar cuarteles
+        #Poblar bodegas
+            #Poblar tanques
+    #Leer lista gurobi
+        #poblar cosecha por dia
+#main
+    #while maximo dias o tanque fermentando
+        #dia inicia
+            #atualizar tanques
+            #revisar tanques
+            #poner output en resumen
+        #revisar que se cosecho a que tanque
+            #juntar cosecha(que se puede mezclar) y bodega destino 
+            #ver tanque disponibles
+                #si no hay tanque disponible
+                    #poner en resumen que no se cumplio y proseguir
+                #si hay disponibilidad
+                    #heuristica
+                        #decidir
+                            #flujo(heuristica)-despues
+                                #pogramar desicion a que tanque
+                        #rellenar tanques(generar dia salida)
+                    #si sobro cosecha
+                        #poner en resumen que sobro y no se cumplio
+                    # si falto cosecha para llenar tanques
+                        #poner en resumen y que no se cumplio
+                      
+    
+        
+    #computo
+        #leer resumen
