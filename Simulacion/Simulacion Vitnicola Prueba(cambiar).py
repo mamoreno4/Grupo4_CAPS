@@ -10,8 +10,11 @@ class Cuartel:
         self.precio=listav[6]
     def __str__(self):
         return "-> {}".format(self.id)
+    def __repr__(self):
+        return "Cuartel {}".format(self.id)
 class Bodega:
     def __init__(self,ubicacion_tanques):
+        self.id_tanque=0
         self.ubicacion=ubicacion_tanques[0]
         self.tanques=[]
         self.tanques_fermentando=[]
@@ -21,23 +24,21 @@ class Bodega:
         tanques_75=ubicacion_tanques[3]
         tanques_100=ubicacion_tanques[4]
         for i in range(tanques_30):
-            T=Tanque(30)
+            T=Tanque(30,self.ubicacion,self.id_tanque)
+            self.id_tanque+=1
             self.agregar_tanque(T)
         for i in range(tanques_50):
-            T=Tanque(50)
+            T=Tanque(50,self.ubicacion,self.id_tanque)
+            self.id_tanque+=1
             self.agregar_tanque(T)
         for i in range(tanques_75):
-            T=Tanque(75)
+            T=Tanque(75,self.ubicacion,self.id_tanque)
+            self.id_tanque+=1
             self.agregar_tanque(T)
         for i in range(tanques_100):
-            T=Tanque(100)
+            T=Tanque(100,self.ubicacion,self.id_tanque)
+            self.id_tanque+=1
             self.agregar_tanque(T)
-        
- 
-        
-            
-
-
         pass
     def agregar_tanque(self,tanque):
         self.tanques.append(tanque)
@@ -62,9 +63,11 @@ class Bodega:
         for i in self.tanques_disponibles:
             disp.append([i,i.capacidad])
         return disp
-
+    def __repr__(self):
+        return "Bodega {}".format(self.ubicacion)
 class Tanque:
-    def __init__(self,capacidad):
+    def __init__(self,capacidad,ubicacion,id):
+        self.id = id
         self.capacidad=capacidad
         self.estado="Disponible"
         self.dia_inicial=0
@@ -72,6 +75,7 @@ class Tanque:
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         self.precio=0
+        self.ubicacion=ubicacion
         pass
     def fermentar(self,cantidad,dia,variedad,precio,distr):
         if self.estado=="Disponible":
@@ -99,6 +103,8 @@ class Tanque:
         p=Dist.iloc[0][3]
         dia_generado=binom.rvs(n, p)
         return dia_generado
+    def __repr__(self):
+        return "Tanque {}".format(self.id)+" de la bodega {}".format(self.ubicacion)
 #Revisar que mas poner en resumen
 class resumen:
     def __init__(self):
