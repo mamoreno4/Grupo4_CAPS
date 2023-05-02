@@ -8,6 +8,10 @@ class Cuartel:
         self.id=listav[1]
         self.variedad=listav[5]
         self.precio=listav[6]
+        self.cosecha_por_dia=dict()
+    def agregar_cosecha(self,dia,cantidad):
+        self.cosecha_por_dia[dia]=cantidad
+        pass
     def __str__(self):
         return "-> {}".format(self.id)
     def __repr__(self):
