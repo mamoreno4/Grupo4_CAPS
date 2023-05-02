@@ -31,7 +31,6 @@ Distribucion_cepa.append([Cepa,dist.model["name"],dist.model["params"][0],dist.m
 #Cepa CF
 Cepa="CF"
 df = pd.read_excel('Datos.xlsx', sheet_name='CF')
-
 x = np.array(df)
 
 # Fit distributions

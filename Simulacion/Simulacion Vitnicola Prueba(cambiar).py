@@ -1,6 +1,7 @@
 from random import uniform, random, seed, randint, gauss
 import numpy as np
 import pandas as pd
+from scipy.stats import binom
 
 class Cuartel:
     def __init__(self, listav,cosecha_aproximada):
@@ -48,13 +49,19 @@ class Tanque:
         self.dia_termino=0
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
+        self.precio=0
         pass
-    def fermentar(self,cantidad,dia,variedad):
-        self.estado="Fermentando"
-        self.dia_inicial=dia
-        self.cantidad_fermentado=cantidad
-        self.variedad_fermentando=""
-        self.dia_termino=self.generar_dia(variedad)
+    def fermentar(self,cantidad,dia,variedad,precio,distr):
+        if self.estado=="Disponible":
+            self.estado="Fermentando"
+            self.dia_inicial=dia
+            self.cantidad_fermentado=cantidad
+            self.variedad_fermentando=variedad
+            self.precio=precio
+            self.dia_termino=dia+self.generar_dia(dia,variedad,distr)
+            return "Fermentando"
+        else:
+            return "Error: tanque no Disponible"
     def vaciar_tanque(self):
         dias_fermentando=self.dia_termino-self.dia_inicial
         fermentado=[self.cantidad_fermentado,self.variedad_fermentando,dias_fermentando]
@@ -62,13 +69,25 @@ class Tanque:
         self.variedad_fermentando=""
         self.dia_inicial=0
         self.dia_termino=0
+        self.estado="Disponible"
         return fermentado
-    def generar_dia(self,variedad,distr):
+    def generar_dia(self,dia,variedad,distr):
+        Dist=distr[distr["Cepa"]==variedad]
+        n=Dist.iloc[0][2]
+        p=Dist.iloc[0][3]
+        dia_generado=binom.rvs(n, p)
+        return dia_generado
 
+class resumen:
+    def __init__(self):
+        self.dias=dict()
+        for i in range(1:100):
+        
         pass
 
 
-df = pd.read_excel('./../Distribuciones/dist.xlsx')
+
+Distribuciones= pd.read_excel('./../Distribuciones/dist.xlsx')
 
 
 
@@ -85,7 +104,7 @@ df = pd.read_excel('./../Distribuciones/dist.xlsx')
         #revisar tanques(listo)
         #tanques disponibles(return que tanque con que capacidad esta disponible)(listo)
     #Tanques
-        #generar dia
+        #generar dia(listo)
         #revisar tanques(llamar vaciar tanques)(listo)
     #Resumen
         #crear estructura
