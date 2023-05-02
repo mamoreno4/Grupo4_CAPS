@@ -1,4 +1,3 @@
-from datetime import date, datetime, timedelta
 from random import uniform, random, seed, randint, gauss
 import numpy as np
 import pandas as pd
@@ -64,9 +63,12 @@ class Tanque:
         self.dia_inicial=0
         self.dia_termino=0
         return fermentado
-    def generar_dia(self,variedad):
+    def generar_dia(self,variedad,distr):
+
         pass
 
+
+df = pd.read_excel('./../Distribuciones/dist.xlsx')
 
 
 

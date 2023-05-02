@@ -3,12 +3,11 @@ from distfit import distfit
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-import math
-import openpyxl
+import pandas as pd
+import numpy as np
 
 # Ver si poner todo en una lista o excel
-Distribucion_cepa=[]
+Distribucion_cepa=[["Cepa","Distribucion","Parametro 1","Parametro 2"]]
 #Leer excel
 #Iniciar  distr
 Cepa="C"
@@ -155,11 +154,14 @@ Distribucion_cepa.append([Cepa,dist.model["name"],dist.model["params"][0],dist.m
 Distribucion_cepa.append(["Ch",dist.model["name"],dist.model["params"][0],dist.model["params"][1]])
 
 
-workbook = openpyxl.Workbook()
 
-worksheet = workbook.active
 
-for row in Distribucion_cepa:
-    worksheet.append(row)
+# create a NumPy array
+data = np.array(Distribucion_cepa)
 
-workbook.save('dist.xlsx')
+# create a Pandas DataFrame from the NumPy array
+df = data
+df = pd.DataFrame(data[1:], columns=data[0])
+
+# save the DataFrame to an Excel file
+df.to_excel('dist.xlsx', index=False)
