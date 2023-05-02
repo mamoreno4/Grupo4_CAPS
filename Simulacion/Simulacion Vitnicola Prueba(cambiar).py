@@ -2,11 +2,7 @@ from datetime import date, datetime, timedelta
 from random import uniform, random, seed, randint, gauss
 import numpy as np
 import pandas as pd
-import time as tm
-#revisar que se queda
-#quitar tiempos? Simulacion motecarlo?
-#clases se quedan?
-#dejar cuartel? como revisar cepas? clase o al inciar simulacion?
+
 class Cuartel:
     def __init__(self, listav,cosecha_aproximada):
         self.id=listav[0]
@@ -15,11 +11,6 @@ class Cuartel:
         self.cantidad_dia=cosecha_aproximada
     def __str__(self):
         return "-> {}".format(self.id)
-#trabajadores no se quedan, quitar
-#class Grupo_trabajador:
- #   def __init__(self,lista_valores):
-  #      pass
-#dejar bodega?
 class Bodega:
     def __init__(self,ubicacion):
         self.ubicacion=lista_valores[0]
@@ -31,17 +22,24 @@ class Bodega:
         self.tanques.append(tanque)
         pass
     def revisar_tanques(self,dia):
+        salidas=[]
         self.tanques_disponibles=[]
         self.tanques_fermentando=[]
         for i in self.tanques:
             if i.estado=="Disponible":
                 self.tanques_disponibles.append(i)
             elif i.estado=="Fermentando":
-                self.tanques_fermentando.append(i)
-            else:
-                pass
+                if i.dia_termino==dia:
+                    salidas.append(i.vaciar_tanque())
+                    self.tanques_disponibles.append(i)
+                else:
+                    self.tanques_fermentando.append(i)
+        return salidas
     def tanques_disponibles(self):
-        pass
+        disp=[]
+        for i in self.tanques_disponibles:
+            disp.append([i,i.capacidad])
+        return disp
 
 #tanques?
 class Tanque:
@@ -60,7 +58,8 @@ class Tanque:
         self.variedad_fermentando=""
         self.dia_termino=self.generar_dia(variedad)
     def vaciar_tanque(self):
-        fermentado=[self.cantidad_fermentado,self.variedad_fermentando]
+        dias_fermentando=self.dia_termino-self.dia_inicial
+        fermentado=[self.cantidad_fermentado,self.variedad_fermentando,dias_fermentando]
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         self.dia_inicial=0
@@ -82,11 +81,11 @@ class Tanque:
 
 #Crear clases (Cuarteles,Bodegas,Tanques,Resumen)
     #Bodegas
-        #revisar tanques
-        #tanques disponibles(return que tanque con que capacidad esta disponible)
+        #revisar tanques(listo)
+        #tanques disponibles(return que tanque con que capacidad esta disponible)(listo)
     #Tanques
         #generar dia
-        #revisar tanques(llamar vaciar tanques)
+        #revisar tanques(llamar vaciar tanques)(listo)
     #Resumen
         #crear estructura
 
