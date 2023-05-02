@@ -11,14 +11,37 @@ class Cuartel:
     def __str__(self):
         return "-> {}".format(self.id)
 class Bodega:
-    def __init__(self,ubicacion):
-        self.ubicacion=lista_valores[0]
+    def __init__(self,ubicacion_tanques):
+        self.ubicacion=ubicacion_tanques[0]
         self.tanques=[]
         self.tanques_fermentando=[]
         self.tanques_disponibles=[]
+        tanques_30=ubicacion_tanques[1]
+        tanques_50=ubicacion_tanques[2]
+        tanques_75=ubicacion_tanques[3]
+        tanques_100=ubicacion_tanques[4]
+        for i in range(tanques_30):
+            T=Tanque(30)
+            self.agregar_tanque(T)
+        for i in range(tanques_50):
+            T=Tanque(50)
+            self.agregar_tanque(T)
+        for i in range(tanques_75):
+            T=Tanque(75)
+            self.agregar_tanque(T)
+        for i in range(tanques_100):
+            T=Tanque(100)
+            self.agregar_tanque(T)
+        
+ 
+        
+            
+
+
         pass
     def agregar_tanque(self,tanque):
         self.tanques.append(tanque)
+        self.tanques_disponibles.append(tanque)
         pass
     def revisar_tanques(self,dia):
         salidas=[]
@@ -102,20 +125,22 @@ class resumen:
 Distribuciones= pd.read_excel('./../Distribuciones/dist.xlsx')
 
 
-Cuarteles= pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
+Cuart= pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles=[]
 for i in range(60):
-    CT=Cuartel(Cuarteles.iloc[i])
+    CT=Cuartel(Cuart.iloc[i])
     Los_Cuarteles.append(CT)
 
+Bodegas=pd.read_excel("Datos base G4 (2).xlsx",sheet_name="Tanques")
+Las_Bodegas=[]
+for i in range(3):
+    BT=Bodega(Bodegas.iloc[i])
+    Las_Bodegas.append(BT)
 
 
 
 
 
-
-
-#numpy ver si vale la pena? primera intancia parece que si
 
 
 #Crear clases (Cuarteles,Bodegas,Tanques,Resumen)
