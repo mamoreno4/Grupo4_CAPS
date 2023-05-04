@@ -5,15 +5,14 @@ from scipy.stats import binom
 
 
 class Cuartel:
-
     def __init__(self, listav):
         self.id=listav[1]
         self.variedad=listav[5]
         self.precio=listav[6]
         self.cosecha_por_dia=dict()
 
-    def agregar_cosecha(self,dia,cantidad):
-        self.cosecha_por_dia[dia]=cantidad
+    def agregar_cosecha(self,dia,cantidad_bodega):
+        self.cosecha_por_dia[dia]=cantidad_bodega
         pass
 
     def __str__(self):
@@ -59,10 +58,10 @@ class Bodega:
         pass
 
     def agregar_tanque_fermentando(self,tanque):
-        self.tanques.append(tanque)
+        self.tanques_disponibles.remove(tanque)
         self.tanques_fermentando.append(tanque)
         pass
-
+    
     def revisar_tanques(self,dia):
         salidas=[]
         self.tanques_disponibles=[]
@@ -78,11 +77,13 @@ class Bodega:
                     self.tanques_fermentando.append(i)
         return salidas
     
-    def tanques_disponibles(self):
+    def tanques_capacidad(self,cap):
         disp=[]
         for i in self.tanques_disponibles:
-            disp.append([i,i.capacidad])
+            if i.capacidad==cap:
+                disp.append(i)
         return disp
+    
     def __repr__(self):
         return "Bodega {}".format(self.ubicacion)
     
@@ -107,7 +108,7 @@ class Tanque:
             self.cantidad_fermentado=cantidad
             self.variedad_fermentando=variedad
             self.precio=precio
-            self.dia_termino=dia+self.generar_dia(dia,variedad,distr)
+            self.dia_termino=dia+self.generar_dia(variedad,distr)
             return self
         else:
             return "Error: tanque no Disponible"
@@ -122,10 +123,9 @@ class Tanque:
         self.estado="Disponible"
         return fermentado
     
-    def generar_dia(self,dia,variedad,distr):
-        Dist=distr[distr["Cepa"]==variedad]
-        n=Dist.iloc[0][2]
-        p=Dist.iloc[0][3]
+    def generar_dia(self,variedad,distr):
+        n=distr.loc[variedad][1]
+        p=distr.loc[variedad][2]
         dia_generado=binom.rvs(n, p)
         return dia_generado
     
@@ -165,7 +165,7 @@ class Resumen:
 
 
 
-Distribuciones= pd.read_excel('./../Distribuciones/dist.xlsx')
+Distribuciones= pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
 
 Cuart= pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
@@ -179,11 +179,6 @@ Las_Bodegas=[]
 for i in range(3):
     BT=Bodega(Bodegas.iloc[i])
     Las_Bodegas.append(BT)
-
-
-
-
-
 
 
 #Crear clases (Cuarteles,Bodegas,Tanques,Resumen)
