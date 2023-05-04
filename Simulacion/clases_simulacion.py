@@ -3,20 +3,28 @@ import numpy as np
 import pandas as pd
 from scipy.stats import binom
 
+
 class Cuartel:
+
     def __init__(self, listav):
         self.id=listav[1]
         self.variedad=listav[5]
         self.precio=listav[6]
         self.cosecha_por_dia=dict()
+
     def agregar_cosecha(self,dia,cantidad):
         self.cosecha_por_dia[dia]=cantidad
         pass
+
     def __str__(self):
         return "-> {}".format(self.id)
+    
     def __repr__(self):
         return "Cuartel {}".format(self.id)
+    
+
 class Bodega:
+
     def __init__(self,ubicacion_tanques):
         self.id_tanque=0
         self.ubicacion=ubicacion_tanques[0]
@@ -30,24 +38,31 @@ class Bodega:
         for i in range(tanques_30):
             T=Tanque(30,self.ubicacion,self.id_tanque)
             self.id_tanque+=1
-            self.agregar_tanque(T)
+            self.agregar_tanque_disponible(T)
         for i in range(tanques_50):
             T=Tanque(50,self.ubicacion,self.id_tanque)
             self.id_tanque+=1
-            self.agregar_tanque(T)
+            self.agregar_tanque_disponible(T)
         for i in range(tanques_75):
             T=Tanque(75,self.ubicacion,self.id_tanque)
             self.id_tanque+=1
-            self.agregar_tanque(T)
+            self.agregar_tanque_disponible(T)
         for i in range(tanques_100):
             T=Tanque(100,self.ubicacion,self.id_tanque)
             self.id_tanque+=1
-            self.agregar_tanque(T)
+            self.agregar_tanque_disponible(T)
         pass
-    def agregar_tanque(self,tanque):
+
+    def agregar_tanque_disponible(self,tanque):
         self.tanques.append(tanque)
         self.tanques_disponibles.append(tanque)
         pass
+
+    def agregar_tanque_fermentando(self,tanque):
+        self.tanques.append(tanque)
+        self.tanques_fermentando.append(tanque)
+        pass
+
     def revisar_tanques(self,dia):
         salidas=[]
         self.tanques_disponibles=[]
@@ -62,6 +77,7 @@ class Bodega:
                 else:
                     self.tanques_fermentando.append(i)
         return salidas
+    
     def tanques_disponibles(self):
         disp=[]
         for i in self.tanques_disponibles:
@@ -69,6 +85,8 @@ class Bodega:
         return disp
     def __repr__(self):
         return "Bodega {}".format(self.ubicacion)
+    
+
 class Tanque:
     def __init__(self,capacidad,ubicacion,id):
         self.id = id
@@ -81,6 +99,7 @@ class Tanque:
         self.precio=0
         self.ubicacion=ubicacion
         pass
+
     def fermentar(self,cantidad,dia,variedad,precio,distr):
         if self.estado=="Disponible":
             self.estado="Fermentando"
@@ -89,9 +108,10 @@ class Tanque:
             self.variedad_fermentando=variedad
             self.precio=precio
             self.dia_termino=dia+self.generar_dia(dia,variedad,distr)
-            return "Fermentando"
+            return self
         else:
             return "Error: tanque no Disponible"
+        
     def vaciar_tanque(self):
         dias_fermentando=self.dia_termino-self.dia_inicial
         fermentado=[self.cantidad_fermentado,self.variedad_fermentando,self.variedad_fermentando,dias_fermentando]
@@ -101,32 +121,45 @@ class Tanque:
         self.dia_termino=0
         self.estado="Disponible"
         return fermentado
+    
     def generar_dia(self,dia,variedad,distr):
         Dist=distr[distr["Cepa"]==variedad]
         n=Dist.iloc[0][2]
         p=Dist.iloc[0][3]
         dia_generado=binom.rvs(n, p)
         return dia_generado
+    
     def __repr__(self):
         return "Tanque {}".format(self.id)+" de la bodega {}".format(self.ubicacion)
+    
+
 #Revisar que mas poner en resumen
-class resumen:
+class Resumen:
+
     def __init__(self):
         self.dias=dict()
         for i in range(100):
             self.dias["Dia "+i]=[]
         pass
+
     def agregar_dia(self,dia):
         self.dias["Dia "+dia]=[]
         pass
+
     def agregar_cosecha(self,dia,cosecha):
         self.dias["Dia "+dia].append("Se cosecho "+cosecha)
         pass
+
     def agregar_fermentado(self,dia,fermentado):
         self.dias["Dia "+dia].append("Se fermento "+fermentado[0]+" de variedad "+fermentado[1]+" de precio "+fermentado[2]+" en "+ fermentado[3] +" dias")
         pass
+
     def agregar_sobrante(self,dia,sobrante):
         self.dias["Dia "+dia].append("El dia"+ dia +" sobro la cantidad de "+sobrante)
+        pass
+
+    def agregar_tanque(self, dia, cantidad):
+        self.dias["Dia "+dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
     
 
