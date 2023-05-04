@@ -11,8 +11,32 @@ import clases_simulacion as cs
 Distribuciones= pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
 
+df = pd.read_csv('solucion.csv')
+
+Cuart= pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
+Los_Cuarteles=[]
+for i in range(1,60):
+    CT=cs.Cuartel(Cuart.iloc[i])
+    D=df.where(df["Cuartel"]=="cuartel_"+str(i))
+    D=D.dropna()
+    for j in range(len(D)):
+        V=D.iloc[j]["Valor"]
+        BB=D.iloc[j]["Bodega"]
+        DIA=int(D.iloc[j]["Dia"][4:])
+        CT.agregar_cosecha(DIA,[V,BB])
+    Los_Cuarteles.append(CT)
+
+Bodegas=pd.read_excel("Datos base G4 (2).xlsx",sheet_name="Tanques")
+Las_Bodegas=[]
+for i in range(3):
+    BT=cs.Bodega(Bodegas.iloc[i])
+    Las_Bodegas.append(BT)
+
+
+
 
 # main
+
 dia_actual = 1
 #Cantidad de cosecha por bodega y cepa
 #dictionary = {'key':value}
@@ -21,28 +45,41 @@ cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
 #tamaño de tanques para iterar
 tamanos_T = [100,75,50,30]
-while ((dia_actual < 15) or (len(cs.Las_Bodegas[0].tanques_fermentando) > 0) or (len(cs.Las_Bodegas[1].tanques_fermentando) > 0) or (len(cs.Las_Bodegas[2].tanques_fermentando) > 0)):
-    for bodega in cs.Las_Bodegas:
+while ((dia_actual < 60)):
+    print("Dia " + str(dia_actual))
+    for bodega in Las_Bodegas:
         salidas = bodega.revisar_tanques(dia_actual)
         if len(salidas) == 0:
-            print("No hubo salidas en la bodega " + bodega.ubicacion)
+            #print("No hubo salidas en la bodega " + bodega.ubicacion)
+            pass
         else:
             for salida in salidas:
-                cs.Resumen.agregar_fermentado(dia_actual, salida)
+                #Resumen.agregar_fermentado(dia_actual, salida)
+                pass
     #revisar cosecha diaria por cuartel y precio
-    for cuartel in cs.Los_Cuarteles:
-        if cuartel.precio == 1000:
-            CD=cuartel.cosecha_por_dia[dia_actual]
-            #junta las variedades de cada cuartel
-            cantidad_1000[CD[0]][cuartel.variedad] = cantidad_1000 + CD[1]
-        elif cuartel.precio == 3000:
-            CD=cuartel.cosecha_por_dia[dia_actual]
-            cantidad_3000[CD[0]][cuartel.variedad] = cantidad_3000 + CD[1]
-        elif cuartel.precio == 6000:
-            CD=cuartel.cosecha_por_dia[dia_actual]
-            cantidad_6000[CD[0]][cuartel.variedad] = cantidad_6000 + CD[1]
-    #iterar bodegas
-    for bodega in cs.Las_Bodegas:
+    for cuartel in Los_Cuarteles:
+        if dia_actual in cuartel.cosecha_por_dia.keys():
+            if cuartel.precio == 1000:
+                CD=cuartel.cosecha_por_dia[dia_actual]
+                Nueva=CD[1]
+                CCC=cantidad_1000[CD[0]][cuartel.variedad]
+                CN=Nueva+CCC
+                cantidad_1000[CD[0]][cuartel.variedad] = CN
+            elif cuartel.precio == 3000:
+                CD=cuartel.cosecha_por_dia[dia_actual]
+                Nueva=CD[1]
+                CCC=cantidad_1000[CD[0]][cuartel.variedad]
+                CN=Nueva+CCC
+                cantidad_3000[CD[0]][cuartel.variedad] = CN
+            elif cuartel.precio == 6000:
+                CD=cuartel.cosecha_por_dia[dia_actual]
+                Nueva=CD[1]
+                CCC=cantidad_1000[CD[0]][cuartel.variedad]
+                CN=Nueva+CCC
+                cantidad_6000[CD[0]][cuartel.variedad] = CN
+
+        #iterar bodegas
+    for bodega in Las_Bodegas:
         #establecer bodega actual
         Nbodega=bodega.ubicacion
         #iterar por precio
@@ -52,9 +89,9 @@ while ((dia_actual < 15) or (len(cs.Las_Bodegas[0].tanques_fermentando) > 0) or 
                 #boleano para saber si es mas grande que el tanque
                 Grande=True
                 #mientras sea mas grande que el tanque y haya tanques disponibles
-                while Grande==True and len(bodega.tanques_disponibles(tamano))>0:
+                while Grande==True and len(bodega.tanques_capacidad(tamano))>0:
                     #selecciona el primer tanque disponible
-                    Td=bodega.tanques_disponibles(tamano)[0]
+                    Td=bodega.tanques_capacidad(tamano)[0]
                     #si la cantidad es mayor que el 95% del tanque
                     if cantidad_6000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa,6000,Distribuciones)
@@ -72,8 +109,8 @@ while ((dia_actual < 15) or (len(cs.Las_Bodegas[0].tanques_fermentando) > 0) or 
         for Ncepa in cantidad_3000[Nbodega]:
             for tamano in tamanos_T:
                 Grande=True
-                while Grande==True and len(bodega.tanques_disponibles(tamano))>0:
-                    Td=bodega.tanques_disponibles(tamano)[0]
+                while Grande==True and len(bodega.tanques_capacidad(tamano))>0:
+                    Td=bodega.tanques_capacidad(tamano)[0]
                     if cantidad_3000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa,3000,Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
@@ -89,8 +126,8 @@ while ((dia_actual < 15) or (len(cs.Las_Bodegas[0].tanques_fermentando) > 0) or 
         for Ncepa in cantidad_1000[Nbodega]:
             for tamano in tamanos_T:
                 Grande=True
-                while Grande==True and len(bodega.tanques_disponibles(tamano))>0:
-                    Td=bodega.tanques_disponibles(tamano)[0]
+                while Grande==True and len(bodega.tanques_capacidad(tamano))>0:
+                    Td=bodega.tanques_capacidad(tamano)[0]
                     if cantidad_1000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa,1000,Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
@@ -102,58 +139,8 @@ while ((dia_actual < 15) or (len(cs.Las_Bodegas[0].tanques_fermentando) > 0) or 
                         Grande=False
                     elif cantidad_1000[Nbodega][Ncepa] < tamano*0.65:
                         Grande=False
-                    
-            
-    """""
-    for bodega in cs.Las_Bodegas:
-        if len(bodega.tanques_disponibles) > 0:
-            for tanque in bodega.tanques_disponibles:
-                if cantidad_6000 < tanque.capacidad*0.65:
-                    print("No hay cantidad suficiente de variedad de precio de 6000 para ocupar el tanque")
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_1000)
-                elif tanque.capacidad*0.65 <= cantidad_6000 <= tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(cantidad_6000, dia_actual, "", 6000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cs.Resumen.agregar_tanque(dia_actual, cantidad_6000)
-                    cantidad_6000 = 0
-                elif cantidad_6000 > tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(tanque.capacidad*0.95, dia_actual, "", 6000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cantidad_6000 = cantidad_6000 - tanque.capacidad*0.95
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_6000)
-
-                if cantidad_3000 < tanque.capacidad*0.65:
-                    print("No hay cantidad suficiente de variedad de precio de 3000 para ocupar el tanque")
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_1000)
-                elif tanque.capacidad*0.65 <= cantidad_3000 <= tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(cantidad_3000, dia_actual, "", 3000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cs.Resumen.agregar_tanque(dia_actual, cantidad_3000)
-                    cantidad_3000 = 0
-                elif cantidad_3000 > tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(tanque.capacidad*0.95, dia_actual, "", 3000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cantidad_3000 = cantidad_3000 - tanque.capacidad*0.95
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_3000)
-
-                if cantidad_1000 < tanque.capacidad*0.65:
-                    print("No hay cantidad suficiente de variedad de precio de 1000 para ocupar el tanque")
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_1000)
-                elif tanque.capacidad*0.65 <= cantidad_1000 <= tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(cantidad_1000, dia_actual, "", 1000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cs.Resumen.agregar_tanque(dia_actual, cantidad_1000)
-                    cantidad_1000 = 0
-                elif cantidad_1000 > tanque.capacidad*0.95:
-                    tanque = tanque.fermentar(tanque.capacidad*0.95, dia_actual, "", 1000, "")
-                    bodega.agregar_tanque_fermentando(tanque)
-                    cantidad_1000 = cantidad_1000 - tanque.capacidad*0.95
-                    cs.Resumen.agregar_sobrante(dia_actual, cantidad_1000)
-
-        elif len(bodega.tanques_disponibles) == 0:
-            print("No hay tanques disponibles en la bodega " + bodega.ubicacion)
-    """""
-    cantidad_1000 = 0
-    cantidad_3000 = 0
-    cantidad_6000 = 0
+    
+    cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+    cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+    cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
     dia_actual = dia_actual + 1
