@@ -143,15 +143,15 @@ class Resumen:
         pass
 
     def agregar_dia(self,dia):
-        self.dias["Dia "+dia]=[]
+        self.dias[dia]=[]
         pass
 
     def agregar_cosecha(self,dia,cosecha):
-        self.dias["Dia "+dia].append("Se cosecho "+cosecha)
+        self.dias[dia].append("Se cosecho "+cosecha)
         pass
 
     def agregar_fermentado(self,dia,fermentado):
-        self.dias["Dia "+dia].append("Se fermento "+fermentado[0]+" de variedad "+fermentado[1]+" de precio "+fermentado[2]+" en "+ fermentado[3] +" dias")
+        self.dias[dia].append("Se fermento "+fermentado[0]+" de variedad "+fermentado[1]+" de precio "+fermentado[2]+" en "+ fermentado[3] +" dias")
         pass
 
     def agregar_sobrante(self,dia,sobrante,precio):
@@ -159,7 +159,7 @@ class Resumen:
         pass
 
     def agregar_tanque(self, dia, cantidad):
-        self.dias["Dia "+dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
+        self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
     
 
@@ -198,8 +198,8 @@ cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
 #tamaño de tanques para iterar
 tamanos_T = [100,75,50,30]
-while ((dia_actual < 60)):
-    print("Dia " + str(dia_actual))
+while ((dia_actual < 100)):
+    #print("Dia " + str(dia_actual))
     for bodega in Las_Bodegas:
         salidas = bodega.revisar_tanques(dia_actual)
         if len(salidas) == 0:
@@ -230,7 +230,6 @@ while ((dia_actual < 60)):
                 CCC=cantidad_1000[CD[0]][cuartel.variedad]
                 CN=Nueva+CCC
                 cantidad_6000[CD[0]][cuartel.variedad] = CN
-
         #iterar bodegas
     for bodega in Las_Bodegas:
         #establecer bodega actual
@@ -296,20 +295,24 @@ while ((dia_actual < 60)):
     for i in cantidad_1000:
         for j in cantidad_1000[i]:
             sobras+=cantidad_1000[i][j]
-    resumen.agregar_sobrante(dia_actual, sobras, 1000)
+    if sobras!=0:
+        resumen.agregar_sobrante(dia_actual, sobras, 1000)
     sobras=0
     for i in cantidad_3000:
         for j in cantidad_3000[i]:
             sobras+=cantidad_3000[i][j]
-    resumen.agregar_sobrante(dia_actual, sobras, 3000)
+    if sobras!=0:
+        resumen.agregar_sobrante(dia_actual, sobras, 3000)
 
     sobras=0
     for i in cantidad_6000:
         for j in cantidad_6000[i]:
             sobras+=cantidad_6000[i][j]
-    resumen.agregar_sobrante(dia_actual, sobras, 6000)
+    if sobras!=0:
+        resumen.agregar_sobrante(dia_actual, sobras, 6000)
     sobras=0
-    print(resumen.dias[dia_actual])
+    if len(resumen.dias[dia_actual])>0:
+        print(resumen.dias[dia_actual])
     cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
     cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
     cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
