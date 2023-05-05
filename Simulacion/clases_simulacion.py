@@ -233,11 +233,11 @@ while ((dia_actual < 100)):
             for salida in salidas:
                 resumen.agregar_fermentado(dia_actual, salida)
                 if salida[3] == 1000:
-                    resumen.fermentado_1000[bodega][salida[3]] += salida[0]
+                    resumen.fermentado_1000[bodega][salida[1]] += salida[0]
                 elif salida[3] == 3000:
-                    resumen.fermentado_3000[bodega][salida[3]] += salida[0]
+                    resumen.fermentado_3000[bodega][salida[1]] += salida[0]
                 elif salida[3] == 6000:
-                    resumen.fermentado_6000[bodega][salida[3]] += salida[0]
+                    resumen.fermentado_6000[bodega][salida[1]] += salida[0]
                 pass
 
     #Revisar cosecha diaria por cuartel y precio
