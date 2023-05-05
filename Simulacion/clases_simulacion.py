@@ -161,7 +161,7 @@ class Resumen:
         pass
 
     def agregar_fermentado(self,dia,fermentado):
-        self.dias[dia].append("Se fermento "+fermentado[0]+" de variedad "+fermentado[1]+" de precio "+fermentado[2]+" en "+ fermentado[3] +" dias")
+        self.dias[dia].append("Se fermento "+str(fermentado[0])+" de variedad "+str(fermentado[1])+" de precio "+str(fermentado[2])+" en "+ str(fermentado[3]) +" dias")
         pass
 
     def agregar_sobrante(self,dia,sobrante,precio):
@@ -227,12 +227,11 @@ while ((dia_actual < 100)):
     for bodega in Las_Bodegas:
         salidas = bodega.revisar_tanques(dia_actual)
         if len(salidas) == 0:
-            print("No hubo salidas en la bodega " + bodega.ubicacion)
+            #print("No hubo salidas en la bodega " + bodega.ubicacion)
             pass
         else:
             for salida in salidas:
                 resumen.agregar_fermentado(dia_actual, salida)
-                print("Se fermentó " + salida[0] + " de variedad " + salida[1] + " de precio " + str(salida[2]) + " en " + str(salida[3]) + " dias")
                 pass
 
     #Revisar cosecha diaria por cuartel y precio
@@ -285,7 +284,6 @@ while ((dia_actual < 100)):
                     #si la cantidad es menor que el 65% del tanque
                     elif cantidad_6000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
-                        print("No hay suficiente cantidad para llenar un tanque")
 
         for Ncepa in cantidad_3000[Nbodega]:
             for tamano in tamanos_T:
@@ -303,7 +301,6 @@ while ((dia_actual < 100)):
                         Grande = False
                     elif cantidad_3000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
-                        print("No hay suficiente cantidad para llenar un tanque")
 
         for Ncepa in cantidad_1000[Nbodega]:
             for tamano in tamanos_T:
@@ -321,7 +318,6 @@ while ((dia_actual < 100)):
                         Grande = False
                     elif cantidad_1000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
-                        print("No hay suficiente cantidad para llenar un tanque")
     
     sobras = 0
     for i in cantidad_1000:
