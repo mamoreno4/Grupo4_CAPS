@@ -122,7 +122,7 @@ class Tanque:
         
     def vaciar_tanque(self):
         dias_fermentando=self.dia_termino-self.dia_inicial
-        fermentado=[self.cantidad_fermentado, self.variedad_fermentando, self.variedad_fermentando, dias_fermentando]
+        fermentado=[self.cantidad_fermentado, self.variedad_fermentando, dias_fermentando, self.precio]
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         self.dia_inicial=0
@@ -232,12 +232,12 @@ while ((dia_actual < 100)):
         else:
             for salida in salidas:
                 resumen.agregar_fermentado(dia_actual, salida)
-                if salida.precio == 1000:
-                    resumen.fermentado_1000[salida.bodega][salida.variedad] += salida.cantidad
-                elif salida.precio == 3000:
-                    resumen.fermentado_3000[salida.bodega][salida.variedad] += salida.cantidad
-                elif salida.precio == 6000:
-                    resumen.fermentado_6000[salida.bodega][salida.variedad] += salida.cantidad
+                if salida[3] == 1000:
+                    resumen.fermentado_1000[bodega][salida[3]] += salida[0]
+                elif salida[3] == 3000:
+                    resumen.fermentado_3000[bodega][salida[3]] += salida[0]
+                elif salida[3] == 6000:
+                    resumen.fermentado_6000[bodega][salida[3]] += salida[0]
                 pass
 
     #Revisar cosecha diaria por cuartel y precio
