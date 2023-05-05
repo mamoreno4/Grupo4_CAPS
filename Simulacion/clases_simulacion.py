@@ -161,7 +161,7 @@ class Resumen:
         pass
 
     def agregar_fermentado(self,dia,fermentado):
-        self.dias[dia].append("Se fermento "+str(fermentado[0])+" de variedad "+str(fermentado[1])+" de precio "+str(fermentado[2])+" en "+ str(fermentado[3]) +" dias")
+        self.dias[dia].append("Se fermento "+str(fermentado[0])+" de variedad "+str(fermentado[1])+" de precio "+str(fermentado[3])+" en "+ str(fermentado[2]) +" dias")
         pass
 
     def agregar_sobrante(self,dia,sobrante,precio):
