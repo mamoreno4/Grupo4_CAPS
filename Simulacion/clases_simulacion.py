@@ -114,7 +114,7 @@ class Tanque:
             self.variedad_fermentando=variedad
             self.precio=precio
             self.dia_termino=dia+self.generar_dia(variedad,distr)
-            print("Se comienza a fermentar {} de variedad {} hasta el día {} ".format(cantidad,variedad,self.dia_termino))
+            print("Se comienza a fermentar {} de variedad {} hasta el día {} en la bodega {}".format(cantidad,variedad,self.dia_termino,self.ubicacion))
             pass
         else:
             print("Error: tanque no Disponible")
@@ -161,7 +161,7 @@ class Resumen:
         pass
 
     def agregar_fermentado(self,dia,fermentado):
-        self.dias[dia].append("Se fermento "+str(fermentado[0])+" de variedad "+str(fermentado[1])+" de precio "+str(fermentado[2])+" en "+ str(fermentado[3]) +" dias")
+        self.dias[dia].append("Se fermento "+str(fermentado[0])+" de variedad "+str(fermentado[1])+" de precio "+str(fermentado[3])+" en "+ str(fermentado[2]) +" dias")
         pass
 
     def agregar_sobrante(self,dia,sobrante,precio):
@@ -221,7 +221,6 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 #tamaño de tanques para iterar
 tamanos_T = [100,75,50,30]
 while ((dia_actual < 100)):
-    
     print("Dia " + str(dia_actual))
     
     for bodega in Las_Bodegas:
@@ -233,11 +232,11 @@ while ((dia_actual < 100)):
             for salida in salidas:
                 resumen.agregar_fermentado(dia_actual, salida)
                 if salida[3] == 1000:
-                    resumen.fermentado_1000[bodega][salida[1]] += salida[0]
+                    resumen.fermentado_1000[bodega.ubicacion][salida[1]] += salida[0]
                 elif salida[3] == 3000:
-                    resumen.fermentado_3000[bodega][salida[1]] += salida[0]
+                    resumen.fermentado_3000[bodega.ubicacion][salida[1]] += salida[0]
                 elif salida[3] == 6000:
-                    resumen.fermentado_6000[bodega][salida[1]] += salida[0]
+                    resumen.fermentado_6000[bodega.ubicacion][salida[1]] += salida[0]
                 pass
 
     #Revisar cosecha diaria por cuartel y precio
@@ -290,7 +289,10 @@ while ((dia_actual < 100)):
                     #si la cantidad es menor que el 65% del tanque
                     elif cantidad_6000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
-
+    for bodega in Las_Bodegas:
+        #establecer bodega actual
+        Nbodega = bodega.ubicacion
+        #iterar por precio
         for Ncepa in cantidad_3000[Nbodega]:
             for tamano in tamanos_T:
                 Grande = True
@@ -300,14 +302,21 @@ while ((dia_actual < 100)):
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa, 3000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
                         cantidad_3000[Nbodega][Ncepa] = cantidad_3000[Nbodega][Ncepa] - tamano*0.95
+
                     elif tamano*0.65 <= cantidad_3000[Nbodega][Ncepa] <= tamano*0.95:
                         Td.fermentar(cantidad_3000[Nbodega][Ncepa], dia_actual, Ncepa, 3000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
                         cantidad_3000[Nbodega][Ncepa] = 0
                         Grande = False
+
                     elif cantidad_3000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
 
+
+    for bodega in Las_Bodegas:
+        #establecer bodega actual
+        Nbodega = bodega.ubicacion
+        #iterar por precio
         for Ncepa in cantidad_1000[Nbodega]:
             for tamano in tamanos_T:
                 Grande = True
@@ -317,13 +326,16 @@ while ((dia_actual < 100)):
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa, 1000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
                         cantidad_1000[Nbodega][Ncepa] = cantidad_1000[Nbodega][Ncepa] - tamano*0.95
+ 
                     elif tamano*0.65 <= cantidad_1000[Nbodega][Ncepa] <= tamano*0.95:
                         Td.fermentar(cantidad_1000[Nbodega][Ncepa], dia_actual, Ncepa, 1000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
                         cantidad_1000[Nbodega][Ncepa] = 0
                         Grande = False
+
                     elif cantidad_1000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
+                        
     
     sobras = 0
     for i in cantidad_1000:
@@ -356,46 +368,3 @@ while ((dia_actual < 100)):
 
 #Se imprime el resumen de todo lo fermentado
 resumen.imprimir_resumen()
-
-
-#Crear clases (Cuarteles,Bodegas,Tanques,Resumen)
-    #Bodegas
-        #revisar tanques(listo)
-        #tanques disponibles(return que tanque con que capacidad esta disponible)(listo)
-    #Tanques
-        #generar dia(listo)
-        #revisar tanques(llamar vaciar tanques)(listo)
-    #Resumen
-        #crear estructura(casi listo)
-
-#Leer datos
-    #Leer excel
-        #Poblar cuarteles
-        #Poblar bodegas
-            #Poblar tanques
-    #Leer lista gurobi
-        #poblar cosecha por dia
-
-#main
-    #while maximo dias o tanque fermentando
-        #dia inicia
-            #atualizar tanques
-            #revisar tanques
-            #poner output en resumen
-        #revisar que se cosecho a que tanque
-            #juntar cosecha(que se puede mezclar) y bodega destino 
-            #ver tanque disponibles
-                #si no hay tanque disponible
-                    #poner en resumen que no se cumplio y proseguir
-                #si hay disponibilidad
-                    #heuristica
-                        #decidir
-                            #flujo(heuristica)-despues
-                                #pogramar desicion a que tanque
-                        #rellenar tanques(generar dia salida)
-                    #si sobro cosecha
-                        #poner en resumen que sobro y no se cumplio
-                    # si falto cosecha para llenar tanques
-                        #poner en resumen y que no se cumplio
-    #Computo
-        #Leer resumen
