@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import binom
 import re
+import itertools
 
 
 
@@ -145,10 +146,15 @@ class Resumen:
 
     def __init__(self):
         self.dias=dict()
+        self.sobras_cepas_bodega={'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+
+        self.cosechado=0
+        self.fermentado=0
+        self.sobras=0
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-        for i in range(100):
+        for i in range(200):
             self.dias[i]=[]
         pass
 
@@ -182,7 +188,7 @@ class Resumen:
         for i in self.fermentado_6000:
             for j in self.fermentado_6000[i]:
                 print("EL total final fermentado en la bodega {} de cepa {} es {}".format(i,j,self.fermentado_6000[i][j]))
-    
+
 
 
 resumen = Resumen()
@@ -198,6 +204,7 @@ for i in range(1,61):
     D = D.dropna()
     for j in range(len(D)):
         V = D.iloc[j]["Valor"]
+        resumen.cosechado += V
         BB = D.iloc[j]["Bodega"]
         DIA = int(D.iloc[j]["Dia"][4:])
         CT.agregar_cosecha(DIA,[BB,V])
@@ -209,9 +216,8 @@ for i in range(3):
     BT = Bodega(Bodegas.iloc[i])
     Las_Bodegas.append(BT)
 
-
-
-dia_actual = 1
+seed(1)
+dia_actual = 0
 #Cantidad de cosecha por bodega y cepa
 #dictionary = {'key':value}
 cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -220,9 +226,9 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 
 #tamaño de tanques para iterar
 tamanos_T = [100,75,50,30]
-while ((dia_actual < 100)):
+
+while ((dia_actual < 200)):
     print("Dia " + str(dia_actual))
-    
     for bodega in Las_Bodegas:
         salidas = bodega.revisar_tanques(dia_actual)
         if len(salidas) == 0:
@@ -231,6 +237,7 @@ while ((dia_actual < 100)):
         else:
             for salida in salidas:
                 resumen.agregar_fermentado(dia_actual, salida)
+                resumen.fermentado += salida[0]
                 if salida[3] == 1000:
                     resumen.fermentado_1000[bodega.ubicacion][salida[1]] += salida[0]
                 elif salida[3] == 3000:
@@ -240,6 +247,7 @@ while ((dia_actual < 100)):
                 pass
 
     #Revisar cosecha diaria por cuartel y precio
+
     for cuartel in Los_Cuarteles:
         if dia_actual in cuartel.cosecha_por_dia:
             if cuartel.precio == 1000:
@@ -260,6 +268,9 @@ while ((dia_actual < 100)):
                 CCC = cantidad_1000[CD[0]][cuartel.variedad]
                 CN = Nueva+CCC
                 cantidad_6000[CD[0]][cuartel.variedad] = CN
+            else:
+                print("Error en precio")
+                pass
 
     #Iterar bodegas
     for bodega in Las_Bodegas:
@@ -341,12 +352,17 @@ while ((dia_actual < 100)):
     for i in cantidad_1000:
         for j in cantidad_1000[i]:
             sobras+=cantidad_1000[i][j]
+            resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+    resumen.sobras+=sobras
     if sobras != 0:
         resumen.agregar_sobrante(dia_actual, sobras, 1000)
     sobras = 0
     for i in cantidad_3000:
         for j in cantidad_3000[i]:
             sobras += cantidad_3000[i][j]
+            resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+    resumen.sobras+=sobras
+
     if sobras != 0:
         resumen.agregar_sobrante(dia_actual, sobras, 3000)
 
@@ -354,6 +370,9 @@ while ((dia_actual < 100)):
     for i in cantidad_6000:
         for j in cantidad_6000[i]:
             sobras+=cantidad_6000[i][j]
+            resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+    resumen.sobras+=sobras
+
     if sobras != 0:
         resumen.agregar_sobrante(dia_actual, sobras, 6000)
     sobras = 0
