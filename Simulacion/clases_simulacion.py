@@ -1,4 +1,5 @@
-from random import uniform, random, seed, randint, gauss
+from random import uniform, seed, randint, gauss
+from numpy.random import Generator, PCG64
 import numpy as np
 import pandas as pd
 from scipy.stats import binom
@@ -134,7 +135,7 @@ class Tanque:
     def generar_dia(self,variedad,distr):
         n=distr.loc[variedad][1]
         p=distr.loc[variedad][2]
-        dia_generado=binom.rvs(n, p)
+        dia_generado=scipy_randomGen.rvs(n, p)
         return dia_generado
     
     def __repr__(self):
@@ -189,7 +190,10 @@ class Resumen:
             for j in self.fermentado_6000[i]:
                 print("EL total final fermentado en la bodega {} de cepa {} es {}".format(i,j,self.fermentado_6000[i][j]))
 
-
+seed=10
+scipy_randomGen = binom
+numpy_randomGen = Generator(PCG64(seed))
+scipy_randomGen.random_state=numpy_randomGen
 
 resumen = Resumen()
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
@@ -216,14 +220,12 @@ for i in range(3):
     BT = Bodega(Bodegas.iloc[i])
     Las_Bodegas.append(BT)
 
-seed(1)
 dia_actual = 0
 #Cantidad de cosecha por bodega y cepa
 #dictionary = {'key':value}
 cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
 cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
 cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-
 #tamaño de tanques para iterar
 tamanos_T = [100,75,50,30]
 
@@ -249,25 +251,18 @@ while ((dia_actual < 200)):
     #Revisar cosecha diaria por cuartel y precio
 
     for cuartel in Los_Cuarteles:
+
+
         if dia_actual in cuartel.cosecha_por_dia:
             if cuartel.precio == 1000:
                 CD = cuartel.cosecha_por_dia[dia_actual]
-                Nueva = CD[1]
-                CCC = cantidad_1000[CD[0]][cuartel.variedad]
-                CN = Nueva+CCC
-                cantidad_1000[CD[0]][cuartel.variedad] = CN
+                cantidad_1000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
             elif cuartel.precio == 3000:
                 CD = cuartel.cosecha_por_dia[dia_actual]
-                Nueva = CD[1]
-                CCC=cantidad_1000[CD[0]][cuartel.variedad]
-                CN = Nueva + CCC
-                cantidad_3000[CD[0]][cuartel.variedad] = CN
+                cantidad_3000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
             elif cuartel.precio == 6000:
                 CD = cuartel.cosecha_por_dia[dia_actual]
-                Nueva = CD[1]
-                CCC = cantidad_1000[CD[0]][cuartel.variedad]
-                CN = Nueva+CCC
-                cantidad_6000[CD[0]][cuartel.variedad] = CN
+                cantidad_6000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
             else:
                 print("Error en precio")
                 pass
@@ -290,12 +285,12 @@ while ((dia_actual < 200)):
                     if cantidad_6000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa, 6000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_6000[Nbodega][Ncepa] = cantidad_6000[Nbodega][Ncepa] - tamano*0.95
+                        cantidad_6000[Nbodega][Ncepa] -= tamano*0.95
                     #si la cantidad es mayor que el 65% del tanque
                     elif tamano*0.65 <= cantidad_6000[Nbodega][Ncepa] <= tamano*0.95:
                         Td.fermentar(cantidad_6000[Nbodega][Ncepa], dia_actual, Ncepa, 6000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_6000[Nbodega][Ncepa] = 0
+                        cantidad_6000[Nbodega][Ncepa] -= cantidad_6000[Nbodega][Ncepa]
                         Grande = False
                     #si la cantidad es menor que el 65% del tanque
                     elif cantidad_6000[Nbodega][Ncepa] < tamano*0.65:
@@ -312,12 +307,12 @@ while ((dia_actual < 200)):
                     if cantidad_3000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa, 3000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_3000[Nbodega][Ncepa] = cantidad_3000[Nbodega][Ncepa] - tamano*0.95
+                        cantidad_3000[Nbodega][Ncepa] -=tamano*0.95
 
                     elif tamano*0.65 <= cantidad_3000[Nbodega][Ncepa] <= tamano*0.95:
                         Td.fermentar(cantidad_3000[Nbodega][Ncepa], dia_actual, Ncepa, 3000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_3000[Nbodega][Ncepa] = 0
+                        cantidad_3000[Nbodega][Ncepa] -= cantidad_3000[Nbodega][Ncepa]
                         Grande = False
 
                     elif cantidad_3000[Nbodega][Ncepa] < tamano*0.65:
@@ -336,18 +331,17 @@ while ((dia_actual < 200)):
                     if cantidad_1000[Nbodega][Ncepa] > tamano*0.95:
                         Td.fermentar(tamano*0.95, dia_actual, Ncepa, 1000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_1000[Nbodega][Ncepa] = cantidad_1000[Nbodega][Ncepa] - tamano*0.95
+                        cantidad_1000[Nbodega][Ncepa] -= tamano*0.95
  
                     elif tamano*0.65 <= cantidad_1000[Nbodega][Ncepa] <= tamano*0.95:
                         Td.fermentar(cantidad_1000[Nbodega][Ncepa], dia_actual, Ncepa, 1000, Distribuciones)
                         bodega.agregar_tanque_fermentando(Td)
-                        cantidad_1000[Nbodega][Ncepa] = 0
+                        cantidad_1000[Nbodega][Ncepa] -= cantidad_1000[Nbodega][Ncepa]
                         Grande = False
 
                     elif cantidad_1000[Nbodega][Ncepa] < tamano*0.65:
                         Grande = False
                         
-    
     sobras = 0
     for i in cantidad_1000:
         for j in cantidad_1000[i]:
