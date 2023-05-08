@@ -10,7 +10,7 @@ from clases_simulacion import *
 seed=10
 scipy_randomGen = binom
 numpy_randomGen = Generator(PCG64(seed))
-scipy_randomGen.random_state=numpy_randomGen
+binom.random_state=numpy_randomGen
 
 resumen = Resumen()
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)

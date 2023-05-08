@@ -133,7 +133,7 @@ class Tanque:
     def generar_dia(self,variedad,distr):
         n=distr.loc[variedad][1]
         p=distr.loc[variedad][2]
-        dia_generado=scipy_randomGen.rvs(n, p)
+        dia_generado=binom.rvs(n, p)
         return dia_generado
     
     def __repr__(self):
