@@ -153,6 +153,12 @@ class Resumen:
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+        
+        self.sobras_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+        self.sobras_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+        self.sobras_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
+
+        
         for i in range(200):
             self.dias[i]=[]
         pass
@@ -178,12 +184,42 @@ class Resumen:
         pass
     
     def imprimir_resumen(self):
+        f_total_1000 = 0
+        f_total_3000 = 0
+        f_total_6000 = 0
+        s_total_1000 = 0
+        s_total_3000 = 0
+        s_total_6000 = 0
         for i in self.fermentado_1000:
             for j in self.fermentado_1000[i]:
+                f_total_1000 += self.fermentado_1000[i][j]
                 print("EL total final fermentado en la bodega {} de cepa {} es {}".format(i,j,self.fermentado_1000[i][j]))
         for i in self.fermentado_3000:
             for j in self.fermentado_3000[i]:
+                f_total_3000 += self.fermentado_3000[i][j]
                 print("EL total final fermentado en la bodega {} de cepa {} es {}".format(i,j,self.fermentado_3000[i][j]))
         for i in self.fermentado_6000:
             for j in self.fermentado_6000[i]:
+                f_total_6000 += self.fermentado_6000[i][j]
                 print("EL total final fermentado en la bodega {} de cepa {} es {}".format(i,j,self.fermentado_6000[i][j]))
+        
+        for i in self.sobras_1000:
+            for j in self.sobras_1000[i]:
+                s_total_1000 += self.sobras_1000[i][j]
+                print("EL total final de sobras en la bodega {} de cepa {} es {}".format(i,j,self.sobras_1000[i][j]))
+        for i in self.sobras_3000:
+            for j in self.sobras_3000[i]:
+                s_total_3000 += self.sobras_3000[i][j]
+                print("EL total final de sobras en la bodega {} de cepa {} es {}".format(i,j,self.sobras_3000[i][j]))
+        for i in self.sobras_6000:
+            for j in self.sobras_6000[i]:
+                s_total_6000 += self.sobras_6000[i][j]
+                print("EL total final de sobras en la bodega {} de cepa {} es {}".format(i,j,self.sobras_6000[i][j]))
+        
+        # Final de fermentado y sobras por precio
+        print("El total final de fermentado con precio 1000 es {}".format(f_total_1000))
+        print("El total final de fermentado con precio 3000 es {}".format(f_total_3000))
+        print("El total final de fermentado con precio 6000 es {}".format(f_total_6000))
+        print("El total final de sobras con precio 1000 es {}".format(s_total_1000))
+        print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
+        print("El total final de sobras con precio 6000 es {}".format(s_total_6000))

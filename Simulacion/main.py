@@ -164,14 +164,17 @@ while ((dia_actual < 200)):
         for j in cantidad_1000[i]:
             sobras+=cantidad_1000[i][j]
             resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+            resumen.sobras_1000[i][j] += cantidad_1000[i][j]
     resumen.sobras+=sobras
     if sobras != 0:
         resumen.agregar_sobrante(dia_actual, sobras, 1000)
+
     sobras = 0
     for i in cantidad_3000:
         for j in cantidad_3000[i]:
             sobras += cantidad_3000[i][j]
-            resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+            resumen.sobras_cepas_bodega[i][j] += cantidad_3000[i][j]
+            resumen.sobras_3000[i][j] += cantidad_3000[i][j]
     resumen.sobras+=sobras
 
     if sobras != 0:
@@ -181,7 +184,8 @@ while ((dia_actual < 200)):
     for i in cantidad_6000:
         for j in cantidad_6000[i]:
             sobras+=cantidad_6000[i][j]
-            resumen.sobras_cepas_bodega[i][j] += cantidad_1000[i][j]
+            resumen.sobras_cepas_bodega[i][j] += cantidad_6000[i][j]
+            resumen.sobras_6000[i][j] += cantidad_6000[i][j]
     resumen.sobras+=sobras
 
     if sobras != 0:
