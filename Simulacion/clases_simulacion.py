@@ -13,6 +13,7 @@ class Cuartel:
         self.variedad=listav[5]
         self.precio=listav[6]
         self.cosecha_por_dia=dict()
+        self.dia_optimo=0
 
     def agregar_cosecha(self,dia,cantidad_bodega):
         self.cosecha_por_dia[dia]=cantidad_bodega
@@ -104,6 +105,7 @@ class Tanque:
         self.variedad_fermentando=""
         self.precio=0
         self.ubicacion=ubicacion
+        self.generado=0
         pass
 
     def fermentar(self,cantidad,dia,variedad,precio,distr):
@@ -128,12 +130,14 @@ class Tanque:
         self.dia_inicial=0
         self.dia_termino=0
         self.estado="Disponible"
+        self.generado=0
         return fermentado
     
     def generar_dia(self,variedad,distr):
         n=distr.loc[variedad][1]
         p=distr.loc[variedad][2]
         dia_generado=binom.rvs(n, p)
+        self.generado=dia_generado
         return dia_generado
     
     def __repr__(self):
@@ -146,7 +150,7 @@ class Resumen:
     def __init__(self):
         self.dias=dict()
         self.sobras_cepas_bodega={'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-
+        self.dias_generados=[]
         self.cosechado=0
         self.fermentado=0
         self.sobras=0
@@ -182,6 +186,12 @@ class Resumen:
     def agregar_tanque(self, dia, cantidad):
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
+    def dias_promedio_fermentacion(self):
+        Promedio = 0
+        for i in self.dias_generados:
+            Promedio += i
+        Promedio = Promedio/len(self.dias_generados)
+        return Promedio
     
     def imprimir_resumen(self):
         f_total_1000 = 0
