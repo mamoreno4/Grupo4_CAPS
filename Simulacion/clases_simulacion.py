@@ -154,6 +154,9 @@ class Resumen:
         self.cosechado=0
         self.fermentado=0
         self.sobras=0
+        self.sobras_cantidad_dia=[]
+        self.porcentaje_tanque=[]
+        self.total_cosechable=3704.4200000000023
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -186,13 +189,13 @@ class Resumen:
     def agregar_tanque(self, dia, cantidad):
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
-    def dias_promedio_fermentacion(self):
+    def promedio(self,dato):
         Promedio = 0
-        for i in self.dias_generados:
+        for i in dato:
             Promedio += i
-        Promedio = Promedio/len(self.dias_generados)
+        Promedio = Promedio/len(dato)
         return Promedio
-    
+
     def imprimir_resumen(self):
         f_total_1000 = 0
         f_total_3000 = 0
@@ -233,3 +236,19 @@ class Resumen:
         print("El total final de sobras con precio 1000 es {}".format(s_total_1000))
         print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
+
+def crear_excel(self, nombre_archivo):
+    nombre=nombre_archivo+".xlsx"
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Resumen"
+    ws['A1'] = "Nombre"
+    ws['A2'] = "Cosechado"
+    ws['A3'] = "No cosechado"
+    ws['A4'] = "Fermentado"
+    ws['A5'] = "Sobrante"
+    ws['A6'] = "Promedio de sobrante por dia"
+    ws['A7'] = "Promedio de porcentaje llenado tanque"
+    ws['A8'] = "Costos dias fermentando"
+    ws['A9'] = "Costos perdidas"
+    ws['A10'] = "Ganancias"
