@@ -105,12 +105,14 @@ for u in range(1):
                         if cantidad_6000[Nbodega][Ncepa] > tamano*0.95:
                             Td.fermentar(tamano*0.95, dia_actual, Ncepa, 6000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
+                            resumen.dias_generados.append(Td.generado)
                             cantidad_6000[Nbodega][Ncepa] -= tamano*0.95
                         #si la cantidad es mayor que el 75% del tanque
                         elif tamano*0.75 <= cantidad_6000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_6000[Nbodega][Ncepa], dia_actual, Ncepa, 6000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             cantidad_6000[Nbodega][Ncepa] -= cantidad_6000[Nbodega][Ncepa]
+                            resumen.dias_generados.append(Td.generado)
                             Grande = False
                         #si la cantidad es menor que el 75% del tanque
                         elif cantidad_6000[Nbodega][Ncepa] < tamano*0.75:
@@ -128,12 +130,14 @@ for u in range(1):
                             Td.fermentar(tamano*0.95, dia_actual, Ncepa, 3000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             cantidad_3000[Nbodega][Ncepa] -=tamano*0.95
+                            resumen.dias_generados.append(Td.generado)
 
                         elif tamano*0.75 <= cantidad_3000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_3000[Nbodega][Ncepa], dia_actual, Ncepa, 3000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             cantidad_3000[Nbodega][Ncepa] -= cantidad_3000[Nbodega][Ncepa]
                             Grande = False
+                            resumen.dias_generados.append(Td.generado)
 
                         elif cantidad_3000[Nbodega][Ncepa] < tamano*0.75:
                             Grande = False
@@ -152,12 +156,13 @@ for u in range(1):
                             Td.fermentar(tamano*0.95, dia_actual, Ncepa, 1000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             cantidad_1000[Nbodega][Ncepa] -= tamano*0.95
-    
+                            resumen.dias_generados.append(Td.generado)
                         elif tamano*0.75 <= cantidad_1000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_1000[Nbodega][Ncepa], dia_actual, Ncepa, 1000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             cantidad_1000[Nbodega][Ncepa] -= cantidad_1000[Nbodega][Ncepa]
                             Grande = False
+                            resumen.dias_generados.append(Td.generado)
 
                         elif cantidad_1000[Nbodega][Ncepa] < tamano*0.75:
                             Grande = False
@@ -206,11 +211,11 @@ for u in range(1):
 
     #Se imprime el resumen de todo lo fermentado y sobras
     resumen.imprimir_resumen()
-    #RESUMENES.append(resumen.fermentado)
+    #RESUMENES.append(resumen)
     #resumen=0
 
 
-#dias promedio de fermentacion (yo))
+#dias promedio de fermentacion (yo)) -listo
 #llenado promedio(yo)
 #toneladas no cosechadas(yo)
 #revisar como llenar tanques (funcion,heuristicas) (Martin)
