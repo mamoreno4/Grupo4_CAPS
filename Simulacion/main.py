@@ -204,7 +204,7 @@ for u in range(1):
         cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         dia_actual = dia_actual + 1
 
-    #Se imprime el resumen de todo lo fermentado
+    #Se imprime el resumen de todo lo fermentado y sobras
     resumen.imprimir_resumen()
     #RESUMENES.append(resumen.fermentado)
     #resumen=0
