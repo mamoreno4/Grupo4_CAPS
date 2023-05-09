@@ -48,7 +48,7 @@ RESUMENES=[]
 for u in range(1):
     dia_actual = 0
     resumen = Resumen()
-    seed=u
+    seed=212324+u
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
     binom.random_state=numpy_randomGen
@@ -56,6 +56,7 @@ for u in range(1):
         #print("Dia " + str(dia_actual))
         for bodega in Las_Bodegas:
             salidas = bodega.revisar_tanques(dia_actual)
+            resumen.dias_ocupado_tanques.append(len(bodega.tanques_fermentando)/len(bodega.tanques))
             if len(salidas) == 0:
                 #print("No hubo salidas en la bodega " + bodega.ubicacion)
                 pass
