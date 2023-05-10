@@ -14,7 +14,7 @@ binom.random_state=numpy_randomGen
 
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
-df = pd.read_csv('solucion (2).csv')
+df = pd.read_csv('solucion_17_dias.csv')
 
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
