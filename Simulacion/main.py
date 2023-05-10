@@ -14,11 +14,12 @@ binom.random_state=numpy_randomGen
 
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
-df = pd.read_csv('solucion_17_dias.csv')
-
+df = pd.read_csv('solucion_18_dias.csv')
+ssss=0
+sssss=0
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
-for i in range(1,61):
+for i in range(1,65):
     CT = Cuartel(Cuart.iloc[i-1])
     D = df.where(df["Cuartel"] == "cuartel_"+str(i))
     D = D.dropna()
@@ -35,7 +36,7 @@ for i in range(3):
     BT = Bodega(Bodegas.iloc[i])
     Las_Bodegas.append(BT)
 
-dia_actual = 0
+dia_actual = 1
 #Cantidad de cosecha por bodega y cepa
 #dictionary = {'key':value}
 cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -46,13 +47,13 @@ tamanos_T = [100,75,50,30]
 RESUMENES=[]
 #Iterar seeds
 for u in range(1):
-    dia_actual = 0
+    dia_actual = 1
     resumen = Resumen()
     seed=212324+u
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
     binom.random_state=numpy_randomGen
-    while ((dia_actual < 120)):
+    while ((dia_actual < 150)):
         #print("Dia " + str(dia_actual))
         for bodega in Las_Bodegas:
             salidas = bodega.revisar_tanques(dia_actual)
@@ -74,20 +75,24 @@ for u in range(1):
 
         #Revisar cosecha diaria por cuartel y precio
 
-        for cuartel in Los_Cuarteles:
-            if dia_actual in cuartel.cosecha_por_dia:
-                resumen.cosechado +=cuartel.cosecha_por_dia[dia_actual][1]
-                if cuartel.precio == 1000:
-                    CD = cuartel.cosecha_por_dia[dia_actual]
-                    cantidad_1000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
-                elif cuartel.precio == 3000:
-                    CD = cuartel.cosecha_por_dia[dia_actual]
-                    cantidad_3000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
-                elif cuartel.precio == 6000:
-                    CD = cuartel.cosecha_por_dia[dia_actual]
-                    cantidad_6000[CD[0]][cuartel.variedad] += cuartel.cosecha_por_dia[dia_actual][1]
+        for cuartel in Los_Cuarteles: 
+                if len(cuartel.cosecha_por_dia[dia_actual]) > 0:
+                    for i in cuartel.cosecha_por_dia[dia_actual]:
+                        if i[1] > 1:
+                            resumen.cosechado +=i[1]
+                        if cuartel.precio == 1000:
+                            
+                            cantidad_1000[i[0]][cuartel.variedad] += i[1]
+                        elif cuartel.precio == 3000:
+                            
+                            cantidad_3000[i[0]][cuartel.variedad] += i[1]
+                        elif cuartel.precio == 6000:
+                
+                            cantidad_6000[i[0]][cuartel.variedad] += i[1]
+                        else:
+                            print("Error en precio")
+                            pass
                 else:
-                    print("Error en precio")
                     pass
         #Iterar bodegas
         for bodega in Las_Bodegas:
@@ -220,7 +225,7 @@ for u in range(1):
         cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-        dia_actual = dia_actual + 1
+        dia_actual +=1
 
     #Se imprime el resumen de todo lo fermentado y sobras
     resumen.imprimir_resumen()

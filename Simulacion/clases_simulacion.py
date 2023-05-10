@@ -13,10 +13,12 @@ class Cuartel:
         self.variedad=listav[5]
         self.precio=listav[6]
         self.cosecha_por_dia=dict()
+        for i in range(1,366):
+            self.cosecha_por_dia[i]=[]
         self.dia_optimo=0
 
     def agregar_cosecha(self,dia,cantidad_bodega):
-        self.cosecha_por_dia[dia]=cantidad_bodega
+        self.cosecha_por_dia[dia].append(cantidad_bodega)
         pass
 
     def __str__(self):
@@ -156,7 +158,7 @@ class Resumen:
         self.sobras=0
         self.sobras_cantidad_dia=[]
         self.porcentaje_tanque=[]
-        self.total_cosechable=3704.4200000000023
+        self.total_cosechable=3753.4200000000023
         self.dias_ocupado_tanques=[]
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
