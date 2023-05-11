@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import binom
 import openpyxl
+import itertools
 
 class Cuartel:
 
@@ -285,3 +286,38 @@ def crear_excel(nombre_archivo,lista_resumenes):
         ws['K'+str(c)] = G[9][1]
         c+=1
     wb.save(nombre)
+
+
+
+
+def get_combination(tanks, liquid):
+    best_combination = None
+    best_diff = float('inf')
+
+    for r in range(1, len(tanks) + 1):
+        combinations = itertools.combinations(tanks, r)
+        for combination in combinations:
+            total_capacity = sum(capacity for _, capacity in combination)
+            if total_capacity <= liquid:
+                diff = liquid - total_capacity
+                if diff < best_diff:
+                    best_combination = combination
+                    best_diff = diff
+
+    return best_combination
+
+def fill_tanks(tanks, liquid):
+    combination = get_combination(tanks, liquid)
+    if combination:
+        fill_levels = []
+        remaining_liquid = liquid
+        for tank, capacity in combination:
+            if remaining_liquid <= liquid * 0.10:
+                fill_level = remaining_liquid
+            else:
+                fill_level = min(remaining_liquid, capacity * 0.95)
+            fill_levels.append((tank, fill_level))
+            remaining_liquid -= fill_level
+        return fill_levels
+
+    return "No valid combination found."
