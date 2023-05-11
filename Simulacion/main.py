@@ -116,11 +116,13 @@ for u in range(100):
                             resumen.dias_generados.append(Td.generado)
                             cantidad_6000[Nbodega][Ncepa] -= tamano*0.95
                             resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
                         #si la cantidad es mayor que el 75% del tanque
                         elif tamano*0.75 <= cantidad_6000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_6000[Nbodega][Ncepa], dia_actual, Ncepa, 6000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             resumen.porcentaje_tanque.append(cantidad_6000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_3000[Nbodega][Ncepa]*25*Td.generado
                             cantidad_6000[Nbodega][Ncepa] -= cantidad_6000[Nbodega][Ncepa]
                             resumen.dias_generados.append(Td.generado)
                             Grande = False
@@ -142,13 +144,18 @@ for u in range(100):
                             cantidad_3000[Nbodega][Ncepa] -=tamano*0.95
                             resumen.dias_generados.append(Td.generado)
                             resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
+                            
                         elif tamano*0.75 <= cantidad_3000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_3000[Nbodega][Ncepa], dia_actual, Ncepa, 3000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             resumen.porcentaje_tanque.append(cantidad_3000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_3000[Nbodega][Ncepa]*25*Td.generado
+
                             cantidad_3000[Nbodega][Ncepa] -= cantidad_3000[Nbodega][Ncepa]
                             Grande = False
                             resumen.dias_generados.append(Td.generado)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
 
                         elif cantidad_3000[Nbodega][Ncepa] < tamano*0.75:
                             Grande = False
@@ -168,10 +175,12 @@ for u in range(100):
                             cantidad_1000[Nbodega][Ncepa] -= tamano*0.95
                             resumen.dias_generados.append(Td.generado)
                             resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
                         elif tamano*0.75 <= cantidad_1000[Nbodega][Ncepa] <= tamano*0.95:
                             Td.fermentar(cantidad_1000[Nbodega][Ncepa], dia_actual, Ncepa, 1000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
                             resumen.porcentaje_tanque.append(cantidad_1000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_1000[Nbodega][Ncepa]*25*Td.generado
                             cantidad_1000[Nbodega][Ncepa] -= cantidad_1000[Nbodega][Ncepa]
                             Grande = False
                             resumen.dias_generados.append(Td.generado)
@@ -187,6 +196,7 @@ for u in range(100):
                 resumen.sobras_1000[i][j] += cantidad_1000[i][j]
                 if cantidad_1000[i][j] != 0:
                     resumen.sobras_cantidad_dia.append(cantidad_1000[i][j])
+                    resumen.costo_sobras+=cantidad_1000[i][j]*10*1000
         resumen.sobras+=sobras
         if sobras != 0:
             resumen.agregar_sobrante(dia_actual, sobras, 1000)
@@ -199,6 +209,7 @@ for u in range(100):
                 resumen.sobras_3000[i][j] += cantidad_3000[i][j]
                 if cantidad_3000[i][j] != 0:
                     resumen.sobras_cantidad_dia.append(cantidad_3000[i][j])
+                    resumen.costo_sobras+=cantidad_3000[i][j]*10*3000
 
         resumen.sobras+=sobras
 
@@ -213,6 +224,7 @@ for u in range(100):
                 resumen.sobras_6000[i][j] += cantidad_6000[i][j]
                 if cantidad_6000[i][j] != 0:
                     resumen.sobras_cantidad_dia.append(cantidad_6000[i][j])
+                    resumen.costo_sobras+=cantidad_6000[i][j]*10*6000
         resumen.sobras+=sobras
 
         if sobras != 0:
