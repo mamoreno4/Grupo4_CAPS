@@ -46,10 +46,11 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 tamanos_T = [100,75,50,30]
 RESUMENES=[]
 #Iterar seeds
-for u in range(1):
+for u in range(100):
     dia_actual = 1
     resumen = Resumen()
     seed=212324+u
+    resumen.seed = seed
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
     binom.random_state=numpy_randomGen
@@ -229,7 +230,7 @@ for u in range(1):
 
     #Se imprime el resumen de todo lo fermentado y sobras
     resumen.imprimir_resumen()
-    #RESUMENES.append(resumen)
+    RESUMENES.append(resumen)
     #resumen=0
 
 
@@ -239,4 +240,4 @@ for u in range(1):
 #revisar como llenar tanques (funcion,heuristicas) (Martin)
 
 #costos(fermentacion, dia optimo, perdidas) 
-#llenar excel (fermentado, kpis, cosechado etc)
+#llenar excel (fermentado, kpis, cosechado etc) -listo

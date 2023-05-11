@@ -3,8 +3,7 @@ from numpy.random import Generator, PCG64
 import numpy as np
 import pandas as pd
 from scipy.stats import binom
-
-
+import openpyxl
 
 class Cuartel:
 
@@ -156,6 +155,7 @@ class Resumen:
         self.cosechado=0
         self.fermentado=0
         self.sobras=0
+        self.seed=0
         self.sobras_cantidad_dia=[]
         self.porcentaje_tanque=[]
         self.total_cosechable=3753.4200000000023
@@ -192,12 +192,19 @@ class Resumen:
     def agregar_tanque(self, dia, cantidad):
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
-    def promedio(self,dato):
-        Promedio = 0
-        for i in dato:
-            Promedio += i
-        Promedio = Promedio/len(dato)
-        return Promedio
+    def gen_promedio(self):
+
+        Promedios = [["Dias generados",],["Dias Ocupado tanques",],["Promedio de porcentaje llenado tanque",],["Promedio de sobrante por dia",],["Cosechado",self.cosechado],["Fermentado",self.fermentado],["Nombre(seed)",self.seed],["Sobrante",self.sobras]]
+        datos=[self.dias_generados,self.dias_ocupado_tanques,self.porcentaje_tanque,self.sobras_cantidad_dia]
+        p=0
+        for x in datos:
+            Promedio = 0
+            for i in x:
+                Promedio += i
+            Promedio = Promedio/len(x)
+            Promedios[p].append(Promedio)
+            p+=1
+        return Promedios
 
     def imprimir_resumen(self):
         f_total_1000 = 0
@@ -240,18 +247,34 @@ class Resumen:
         print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
 
-def crear_excel(self, nombre_archivo):
+def crear_excel(nombre_archivo,lista_resumenes):
     nombre=nombre_archivo+".xlsx"
-    wb = Workbook()
+    wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Resumen"
-    ws['A1'] = "Nombre"
-    ws['A2'] = "Cosechado"
-    ws['A3'] = "No cosechado"
-    ws['A4'] = "Fermentado"
-    ws['A5'] = "Sobrante"
-    ws['A6'] = "Promedio de sobrante por dia"
-    ws['A7'] = "Promedio de porcentaje llenado tanque"
-    ws['A8'] = "Costos dias fermentando"
-    ws['A9'] = "Costos perdidas"
-    ws['A10'] = "Ganancias"
+    ws['A1'] = "Nombre(seed)"
+    ws['B1'] = "Cosechado"
+    ws['C1'] = "No cosechado"
+    ws['D1'] = "Fermentado"
+    ws['E1'] = "Sobrante"
+    ws['F1'] = "Promedio de sobrante por dia"
+    ws['G1'] = "Promedio de porcentaje llenado tanque"
+    ws['H1'] = "Dias generados"
+    ws['I1'] = "Dias Ocupado tanques"
+    ws['J1'] = "Costos dias fermentando"
+    ws['K1'] = "Costos perdidas"
+    ws['L1'] = "Ganancias"
+    c=2
+    for i in lista_resumenes:
+        G=i.gen_promedio()
+        ws['A'+str(c)] = G[6][1]
+        ws['B'+str(c)] = G[4][1]
+        ws['C'+str(c)] = 3754.4000000000024 - G[4][1]
+        ws['D'+str(c)] = G[5][1]
+        ws['E'+str(c)] = G[7][1]
+        ws['F'+str(c)] = G[3][1]
+        ws['G'+str(c)] = G[2][1]
+        ws['H'+str(c)] = G[0][1]
+        ws['I'+str(c)] = G[1][1]
+        c+=1
+    wb.save(nombre)
