@@ -46,10 +46,10 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 tamanos_T = [100,75,50,30]
 RESUMENES=[]
 #Iterar seeds
-for u in range(1):
+for u in range(100):
     dia_actual = 1
     resumen = Resumen()
-    seed=212324+u
+    seed=21234+u
     resumen.seed = seed
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
@@ -107,7 +107,7 @@ for u in range(1):
                         tanks.append((i,i.capacidad))
                     result=fill_tanks(tanks, cantidad_6000[Nbodega][Ncepa])
 
-                    if result!="No valid combination found.":
+                    if result:
                         for Td, fill_amount in result:
                             Td.fermentar(fill_amount, dia_actual, Ncepa, 6000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
@@ -127,7 +127,7 @@ for u in range(1):
                     for i in bodega.tanques_disponibles:
                         tanks.append((i,i.capacidad))
                     result=fill_tanks(tanks, cantidad_3000[Nbodega][Ncepa])
-                    if result!="No valid combination found.":
+                    if result:
                         for Td, fill_amount in result:
                             Td.fermentar(fill_amount, dia_actual, Ncepa, 3000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
@@ -149,7 +149,7 @@ for u in range(1):
                     for i in bodega.tanques_disponibles:
                         tanks.append((i,i.capacidad))
                     result=fill_tanks(tanks, cantidad_1000[Nbodega][Ncepa])
-                    if result!="No valid combination found.":
+                    if result:
                         for Td, fill_amount in result:
                             Td.fermentar(fill_amount, dia_actual, Ncepa, 1000, Distribuciones)
                             bodega.agregar_tanque_fermentando(Td)
@@ -158,7 +158,98 @@ for u in range(1):
                             resumen.porcentaje_tanque.append(fill_amount/Td.capacidad)
                             resumen.costo_dias+=fill_amount*0.95*25*Td.generado
 
+        for bodega in Las_Bodegas:
+            #establecer bodega actual
+            Nbodega = bodega.ubicacion
+            #iterar por precio
+            for Ncepa in cantidad_6000[Nbodega]:
+                #iterar por tamaño de tanque
+                for tamano in tamanos_T:
+                    #boleano para saber si es mas grande que el tanque
+                    Grande = True
+                    #mientras sea mas grande que el tanque y haya tanques disponibles
+                    while ((Grande == True) and (len(bodega.tanques_capacidad(tamano)) > 0)):
+                        #selecciona el primer tanque disponible
+                        Td = bodega.tanques_capacidad(tamano)[0]
+                        #si la cantidad es mayor que el 95% del tanque
+                        if cantidad_6000[Nbodega][Ncepa] > tamano*0.95:
+                            Td.fermentar(tamano*0.95, dia_actual, Ncepa, 6000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.dias_generados.append(Td.generado)
+                            cantidad_6000[Nbodega][Ncepa] -= tamano*0.95
+                            resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
+                        #si la cantidad es mayor que el 75% del tanque
+                        elif tamano*0.75 <= cantidad_6000[Nbodega][Ncepa] <= tamano*0.95:
+                            Td.fermentar(cantidad_6000[Nbodega][Ncepa], dia_actual, Ncepa, 6000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.porcentaje_tanque.append(cantidad_6000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_3000[Nbodega][Ncepa]*25*Td.generado
+                            cantidad_6000[Nbodega][Ncepa] -= cantidad_6000[Nbodega][Ncepa]
+                            resumen.dias_generados.append(Td.generado)
+                            Grande = False
+                        #si la cantidad es menor que el 75% del tanque
+                        elif cantidad_6000[Nbodega][Ncepa] < tamano*0.75:
+                            Grande = False
+        for bodega in Las_Bodegas:
+            #establecer bodega actual
+            Nbodega = bodega.ubicacion
+            #iterar por precio
+            for Ncepa in cantidad_3000[Nbodega]:
+                for tamano in tamanos_T:
+                    Grande = True
+                    while ((Grande == True) and (len(bodega.tanques_capacidad(tamano)) > 0)):
+                        Td = bodega.tanques_capacidad(tamano)[0]
+                        if cantidad_3000[Nbodega][Ncepa] > tamano*0.95:
+                            Td.fermentar(tamano*0.95, dia_actual, Ncepa, 3000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            cantidad_3000[Nbodega][Ncepa] -=tamano*0.95
+                            resumen.dias_generados.append(Td.generado)
+                            resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
+                            
+                        elif tamano*0.75 <= cantidad_3000[Nbodega][Ncepa] <= tamano*0.95:
+                            Td.fermentar(cantidad_3000[Nbodega][Ncepa], dia_actual, Ncepa, 3000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.porcentaje_tanque.append(cantidad_3000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_3000[Nbodega][Ncepa]*25*Td.generado
 
+                            cantidad_3000[Nbodega][Ncepa] -= cantidad_3000[Nbodega][Ncepa]
+                            Grande = False
+                            resumen.dias_generados.append(Td.generado)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
+
+                        elif cantidad_3000[Nbodega][Ncepa] < tamano*0.75:
+                            Grande = False
+
+        for bodega in Las_Bodegas:
+            #establecer bodega actual
+            Nbodega = bodega.ubicacion
+            #iterar por precio
+            for Ncepa in cantidad_1000[Nbodega]:
+                for tamano in tamanos_T:
+                    Grande = True
+                    while ((Grande == True) and (len(bodega.tanques_capacidad(tamano)) > 0)):
+                        Td=bodega.tanques_capacidad(tamano)[0]
+                        if cantidad_1000[Nbodega][Ncepa] > tamano*0.95:
+                            Td.fermentar(tamano*0.95, dia_actual, Ncepa, 1000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            cantidad_1000[Nbodega][Ncepa] -= tamano*0.95
+                            resumen.dias_generados.append(Td.generado)
+                            resumen.porcentaje_tanque.append(0.95)
+                            resumen.costo_dias+=tamano*0.95*25*Td.generado
+                        elif tamano*0.75 <= cantidad_1000[Nbodega][Ncepa] <= tamano*0.95:
+                            Td.fermentar(cantidad_1000[Nbodega][Ncepa], dia_actual, Ncepa, 1000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.porcentaje_tanque.append(cantidad_1000[Nbodega][Ncepa]/tamano)
+                            resumen.costo_dias+=cantidad_1000[Nbodega][Ncepa]*25*Td.generado
+                            cantidad_1000[Nbodega][Ncepa] -= cantidad_1000[Nbodega][Ncepa]
+                            Grande = False
+                            resumen.dias_generados.append(Td.generado)
+
+                        elif cantidad_1000[Nbodega][Ncepa] < tamano*0.75:
+                            Grande = False
+                            
                             
         sobras = 0
         for i in cantidad_1000:
@@ -217,7 +308,7 @@ for u in range(1):
     RESUMENES.append(resumen)
     #resumen=0
 
-
+crear_excel("pruebaH2",RESUMENES)
 #dias promedio de fermentacion (yo)) -listo
 #llenado promedio(yo)-listo
 #toneladas no cosechadas(yo) -listo

@@ -14,7 +14,7 @@ binom.random_state=numpy_randomGen
 
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
-df = pd.read_csv('solucion_18_dias.csv')
+df = pd.read_csv('solucion_17_dias.csv')
 ssss=0
 sssss=0
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
@@ -46,10 +46,10 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 tamanos_T = [100,75,50,30]
 RESUMENES=[]
 #Iterar seeds
-for u in range(100):
+for u in range(1):
     dia_actual = 1
     resumen = Resumen()
-    seed=212324+u
+    seed=21234+u
     resumen.seed = seed
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))

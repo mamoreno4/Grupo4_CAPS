@@ -287,37 +287,33 @@ def crear_excel(nombre_archivo,lista_resumenes):
         c+=1
     wb.save(nombre)
 
-
-
-
-def get_combination(tanks, liquid):
+def fill_tanks(tanks, liquid):
     best_combination = None
-    best_diff = float('inf')
+    best_leftover = float('inf')
+    min_tanks_used = float('inf')
 
-    for r in range(1, len(tanks) + 1):
-        combinations = itertools.combinations(tanks, r)
-        for combination in combinations:
+    for n in range(1, len(tanks) + 1):
+        for combination in itertools.combinations(tanks, n):
+            # Calculate the total capacity of the tanks
             total_capacity = sum(capacity for _, capacity in combination)
-            if total_capacity <= liquid:
-                diff = liquid - total_capacity
-                if diff < best_diff:
-                    best_combination = combination
-                    best_diff = diff
+            
+            if total_capacity < liquid:
+                continue
+
+            remaining = liquid
+            leftover = 0
+            fill_levels = []
+
+            for tank, capacity in combination:
+                fill_level = min(max(remaining / total_capacity, 0.75), 0.95)
+                fill_amount = fill_level * capacity
+                fill_levels.append((tank, fill_amount))
+                remaining -= fill_amount
+                leftover += capacity - fill_amount
+
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.05 )) and leftover < best_leftover and n <= min_tanks_used:
+                best_combination = fill_levels
+                best_leftover = leftover
+                min_tanks_used = n
 
     return best_combination
-
-def fill_tanks(tanks, liquid):
-    combination = get_combination(tanks, liquid)
-    if combination:
-        fill_levels = []
-        remaining_liquid = liquid
-        for tank, capacity in combination:
-            if remaining_liquid <= liquid * 0.10:
-                fill_level = remaining_liquid
-            else:
-                fill_level = min(remaining_liquid, capacity * 0.95)
-            fill_levels.append((tank, fill_level))
-            remaining_liquid -= fill_level
-        return fill_levels
-
-    return "No valid combination found."
