@@ -335,7 +335,7 @@ def find_combination(tanks,liquid):
 
         tank_name, capacity = tanks[idx]
         max_fill = int(capacity * 0.95)
-        min_fill = int(capacity * 0.55)
+        min_fill = int(capacity * 0.75)
 
         best_leftovers = float('inf')
         best_combination = {}
