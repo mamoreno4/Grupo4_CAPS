@@ -312,7 +312,7 @@ def fill_tanks(tanks, liquid):
                 remaining -= fill_amount
                 leftover += capacity - fill_amount
             # Check if this is the best combination so far
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.001 )) and leftover < best_leftover and n <= min_tanks_used:
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.05)) and leftover < best_leftover and n <= min_tanks_used:
                 best_combination = fill_levels
                 best_leftover = leftover
                 min_tanks_used = n
@@ -359,3 +359,53 @@ def find_combination(tanks,liquid):
 
     _, best_combination = dp(liquid, 0, 0)
     return best_combination
+
+
+def encontrar_combinacion_liquido(liquido, tanques):
+    combinacion_mas_cercana = None
+    diferencia_minima = float('inf')
+    for r in range(1, len(tanques) + 1):
+        for combo in itertools.combinations(tanques, r):
+            suma_capacidades = sum(capacidad for _, capacidad in combo)
+            if suma_capacidades <= liquido:
+                diferencia = abs(suma_capacidades - liquido)
+                if diferencia < diferencia_minima and suma_capacidades * 0.75 <= liquido:
+                    diferencia_minima = diferencia
+                    combinacion_mas_cercana = combo
+    return combinacion_mas_cercana
+
+def llenar_tanques(liquido_total, tanques):
+    # Ordenar los tanques por capacidad (de mayor a menor)
+    tanques_ordenados = sorted(tanques, key=lambda x: x[1], reverse=True)
+    
+    # Inicializar una lista para almacenar la cantidad de líquido en cada tanque
+    liquido_tanques = []
+    
+    # Recorrer los tanques ordenados
+    for i, tanque in enumerate(tanques_ordenados):
+        nombre_tanque, capacidad_tanque = tanque
+        
+        # Calcular la cantidad de líquido a poner en el tanque actual
+        min_liquido = int(0.75 * capacidad_tanque)  # 75% de la capacidad del tanque
+        max_liquido = int(0.95 * capacidad_tanque)  # 95% de la capacidad del tanque
+        
+        cantidad_liquido = min(liquido_total, max_liquido)
+        
+        liquido_tanques.append((nombre_tanque, cantidad_liquido))
+        liquido_total -= cantidad_liquido
+        
+        # Si ya no queda líquido por distribuir, se detiene el bucle
+        if liquido_total == 0:
+            break
+    
+    return liquido_tanques
+
+def comb_liquido(tanques, liquido):
+    cantidad_liquido_tanques=None
+    combinaciones = encontrar_combinacion_liquido(liquido, tanques)
+
+    com_best=combinaciones
+    if com_best:
+        print(com_best)
+        cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
+    return cantidad_liquido_tanques
