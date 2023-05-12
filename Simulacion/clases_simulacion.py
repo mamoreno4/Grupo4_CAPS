@@ -361,18 +361,23 @@ def find_combination(tanks,liquid):
     return best_combination
 
 
+
 def encontrar_combinacion_liquido(liquido, tanques):
-    combinacion_mas_cercana = None
+    mejor_combinacion = None
     diferencia_minima = float('inf')
-    for r in range(1, len(tanques) + 1):
+    num_tanques = len(tanques)
+    
+    for r in range(1, num_tanques + 1):
         for combo in itertools.combinations(tanques, r):
             suma_capacidades = sum(capacidad for _, capacidad in combo)
-            if suma_capacidades <= liquido:
+            
+            if liquido >= suma_capacidades * 0.75 and liquido <= suma_capacidades * 0.95:
                 diferencia = abs(suma_capacidades - liquido)
-                if diferencia < diferencia_minima and suma_capacidades * 0.75 <= liquido:
+                if diferencia < diferencia_minima:
                     diferencia_minima = diferencia
-                    combinacion_mas_cercana = combo
-    return combinacion_mas_cercana
+                    mejor_combinacion = combo
+    return mejor_combinacion
+
 
 def llenar_tanques(liquido_total, tanques):
     # Ordenar los tanques por capacidad (de mayor a menor)
