@@ -71,7 +71,7 @@ class Bodega:
     def agregar_tanque_fermentando(self,tanque):
         self.tanques_disponibles.remove(tanque)
         self.tanques_fermentando.append(tanque)
-        print("Se agrega tanque {} a fermentar".format(tanque.id))
+        #print("Se agrega tanque {} a fermentar".format(tanque.id))
         pass
     
     def revisar_tanques(self,dia):
@@ -123,7 +123,7 @@ class Tanque:
             self.variedad_fermentando=variedad
             self.precio=precio
             self.dia_termino=dia+self.generar_dia(variedad,distr)
-            print("Se comienza a fermentar {} de variedad {} hasta el día {} en la bodega {}".format(cantidad,variedad,self.dia_termino,self.ubicacion))
+            #print("Se comienza a fermentar {} de variedad {} hasta el día {} en la bodega {}".format(cantidad,variedad,self.dia_termino,self.ubicacion))
             pass
         else:
             print("Error: tanque no Disponible")
@@ -286,12 +286,13 @@ def crear_excel(nombre_archivo,lista_resumenes):
         ws['K'+str(c)] = G[9][1]
         c+=1
     wb.save(nombre)
-
+# funcion para llenar los tanques version 1
 def fill_tanks(tanks, liquid):
+    # iniciar variables
     best_combination = None
     best_leftover = float('inf')
     min_tanks_used = float('inf')
-
+    # iterar sobre todas las combinaciones de tanques
     for n in range(1, len(tanks) + 1):
         for combination in itertools.combinations(tanks, n):
             # Calculate the total capacity of the tanks
@@ -303,17 +304,58 @@ def fill_tanks(tanks, liquid):
             remaining = liquid
             leftover = 0
             fill_levels = []
-
+            # Fill the tanks
             for tank, capacity in combination:
                 fill_level = min(max(remaining / total_capacity, 0.75), 0.95)
                 fill_amount = fill_level * capacity
                 fill_levels.append((tank, fill_amount))
                 remaining -= fill_amount
                 leftover += capacity - fill_amount
-
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.05 )) and leftover < best_leftover and n <= min_tanks_used:
+            # Check if this is the best combination so far
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.001 )) and leftover < best_leftover and n <= min_tanks_used:
                 best_combination = fill_levels
                 best_leftover = leftover
                 min_tanks_used = n
 
+    return best_combination
+
+# funcion para llenar los tanques version 2
+def find_combination(tanks,liquid):
+    # iniciar variables
+    n = len(tanks)
+    memo = {}
+    # funcion recursiva
+    def dp(liquid, idx, num_tanks):
+        # caso base
+        if idx == n:
+            return float('inf'), {}
+
+        if (liquid, idx, num_tanks) in memo:
+            return memo[(liquid, idx, num_tanks)]
+
+        tank_name, capacity = tanks[idx]
+        max_fill = int(capacity * 0.95)
+        min_fill = int(capacity * 0.55)
+
+        best_leftovers = float('inf')
+        best_combination = {}
+        # iterar sobre todas las combinaciones de tanques
+        for fill_amount in range(min_fill, max_fill + 1):
+            if fill_amount <= liquid:
+                remaining_liquid = liquid - fill_amount
+                new_leftovers, combination = dp(remaining_liquid, idx + 1, num_tanks + 1)
+                new_leftovers += capacity - fill_amount
+
+                if new_leftovers < best_leftovers:
+                    best_leftovers = new_leftovers
+                    best_combination = combination.copy()
+                    best_combination[tank_name] = fill_amount
+        if num_tanks < best_leftovers:
+            memo[(liquid, idx, num_tanks)] = (num_tanks, best_combination)
+            return num_tanks, best_combination
+
+        memo[(liquid, idx, num_tanks)] = (best_leftovers, best_combination)
+        return best_leftovers, best_combination
+
+    _, best_combination = dp(liquid, 0, 0)
     return best_combination
