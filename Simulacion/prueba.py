@@ -14,7 +14,7 @@ binom.random_state=numpy_randomGen
 
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
-df = pd.read_csv('solucion_16_dias.csv')
+df = pd.read_csv('solucion_18_dias.csv')
 ssss=0
 sssss=0
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
@@ -30,11 +30,17 @@ for i in range(1,65):
         CT.agregar_cosecha(DIA,[BB,V])
     Los_Cuarteles.append(CT)
 
-Bodegas = pd.read_excel("Datos base G4 (2).xlsx",sheet_name="Tanques")
 Las_Bodegas = []
-for i in range(3):
-    BT = Bodega(Bodegas.iloc[i])
-    Las_Bodegas.append(BT)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Machali")
+b=Bodega(Bodegas,"Machali")
+Las_Bodegas.append(b)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Chépica")
+b=Bodega(Bodegas,"Chepica")
+Las_Bodegas.append(b)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
+b=Bodega(Bodegas,"Nancagua")
+Las_Bodegas.append(b)
+
 
 dia_actual = 1
 #Cantidad de cosecha por bodega y cepa
@@ -46,7 +52,7 @@ cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 
 tamanos_T = [100,75,50,30]
 RESUMENES=[]
 #Iterar seeds
-for u in range(1):
+for u in range(100):
     dia_actual = 1
     resumen = Resumen()
     seed=21234+u
@@ -389,7 +395,7 @@ for u in range(1):
     RESUMENES.append(resumen)
     #resumen=0
 
-#crear_excel("pruebaH2",RESUMENES)
+#crear_excel("prueba 18 dias",RESUMENES)
 #dias promedio de fermentacion (yo)) -listo
 #llenado promedio(yo)-listo
 #toneladas no cosechadas(yo) -listo
