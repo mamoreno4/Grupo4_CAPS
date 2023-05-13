@@ -30,11 +30,17 @@ for i in range(1,65):
         CT.agregar_cosecha(DIA,[BB,V])
     Los_Cuarteles.append(CT)
 
-Bodegas = pd.read_excel("Datos base G4 (2).xlsx",sheet_name="Tanques")
+
 Las_Bodegas = []
-for i in range(3):
-    BT = Bodega(Bodegas.iloc[i])
-    Las_Bodegas.append(BT)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Machali")
+b=Bodega(Bodegas,"Machali")
+Las_Bodegas.append(b)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Chépica")
+b=Bodega(Bodegas,"Chepica")
+Las_Bodegas.append(b)
+Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
+b=Bodega(Bodegas,"Nancagua")
+Las_Bodegas.append(b)
 
 dia_actual = 1
 #Cantidad de cosecha por bodega y cepa

@@ -34,32 +34,15 @@ class Cuartel:
     
 
 class Bodega:
-
-    def __init__(self,ubicacion_tanques):
+    def __init__(self,ubicacion_tanques,nombre):
         self.id_tanque=0
-        self.ubicacion=ubicacion_tanques[0]
+        self.ubicacion=nombre
         self.tanques=[]
         self.tanques_fermentando=[]
         self.tanques_disponibles=[]
-        tanques_30=ubicacion_tanques[1]
-        tanques_50=ubicacion_tanques[2]
-        tanques_75=ubicacion_tanques[3]
-        tanques_100=ubicacion_tanques[4]
-        for i in range(tanques_30):
-            T=Tanque(30,self.ubicacion,self.id_tanque)
-            self.id_tanque+=1
-            self.agregar_tanque_disponible(T)
-        for i in range(tanques_50):
-            T=Tanque(50,self.ubicacion,self.id_tanque)
-            self.id_tanque+=1
-            self.agregar_tanque_disponible(T)
-        for i in range(tanques_75):
-            T=Tanque(75,self.ubicacion,self.id_tanque)
-            self.id_tanque+=1
-            self.agregar_tanque_disponible(T)
-        for i in range(tanques_100):
-            T=Tanque(100,self.ubicacion,self.id_tanque)
-            self.id_tanque+=1
+        for i in range(1,len(ubicacion_tanques.index)):
+            Tanq=ubicacion_tanques.iloc[i]
+            T=Tanque(Tanq[1],self.ubicacion,Tanq[0])
             self.agregar_tanque_disponible(T)
         pass
 
@@ -207,8 +190,9 @@ class Resumen:
             Promedio = 0
             for i in x:
                 Promedio += i
-            Promedio = Promedio/len(x)
-            Promedios[p].append(Promedio)
+            if Promedio != 0:
+                Promedi = Promedio/len(x)
+            Promedios[p].append(Promedi)
             p+=1
         return Promedios
 
@@ -312,7 +296,7 @@ def fill_tanks(tanks, liquid):
                 remaining -= fill_amount
                 leftover += capacity - fill_amount
             # Check if this is the best combination so far
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.05)) and leftover < best_leftover and n <= min_tanks_used:
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.005)) and leftover < best_leftover and n <= min_tanks_used:
                 best_combination = fill_levels
                 best_leftover = leftover
                 min_tanks_used = n
@@ -360,8 +344,6 @@ def find_combination(tanks,liquid):
     _, best_combination = dp(liquid, 0, 0)
     return best_combination
 
-
-
 def encontrar_combinacion_liquido(liquido, tanques):
     mejor_combinacion = None
     diferencia_minima = float('inf')
@@ -406,6 +388,7 @@ def llenar_tanques(liquido_total, tanques):
     return liquido_tanques
 
 def comb_liquido(tanques, liquido):
+
     cantidad_liquido_tanques=None
     combinaciones = encontrar_combinacion_liquido(liquido, tanques)
 
