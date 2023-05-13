@@ -16,16 +16,17 @@ class Cuartel:
         for i in range(1,366):
             self.cosecha_por_dia[i]=[]
         self.dia_optimo=listav[2]
+        self.costo_hora=listav[8]
+        self.transporte={"Machali":listav[9],"Chepica":listav[10],"Nancagua":listav[11]}
         self.despreciacion={1000:[0.8,0.8875,0.95,0.9875,1,0.9833,0.9333,0.85],3000:[0.6,0.775,0.9,0.975,1,0.9667,0.8667,0.7],6000:[0.1,0.4938,0.775,0.9438,1,0.9111,0.6444,0.2]}
     def agregar_cosecha(self,dia,cantidad_bodega):
         self.cosecha_por_dia[dia].append(cantidad_bodega)
         pass
-    def gen_ganancia(self,dia):
-        ganancia=0
+    def gen_desp(self,dia,precio):
+        desp=1
         for i in self.cosecha_por_dia[dia]:
-            desp=self.despreciacion[dia+4-self.dia_optimo]
-            ganancia+=i*self.precio*desp
-        return ganancia
+            desp=self.despreciacion[precio][dia+4-int(self.dia_optimo)]
+        return desp
     def __str__(self):
         return "-> {}".format(self.id)
     
@@ -152,7 +153,8 @@ class Resumen:
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-        
+        self.costo_transporte=0
+        self.costo_trabajo=0
         self.sobras_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.sobras_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.sobras_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -183,7 +185,7 @@ class Resumen:
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
     def gen_promedio(self):
-        Promedios = [["Dias generados",],["Dias Ocupado tanques",],["Promedio de porcentaje llenado tanque",],["Promedio de sobrante por dia",],["Cosechado",self.cosechado],["Fermentado",self.fermentado],["Nombre(seed)",self.seed],["Sobrante",self.sobras],["Costo dias",self.costo_dias],["Costo sobras",self.costo_sobras]]
+        Promedios = [["Dias generados",],["Dias Ocupado tanques",],["Promedio de porcentaje llenado tanque",],["Promedio de sobrante por dia",],["Cosechado",self.cosechado],["Fermentado",self.fermentado],["Nombre(seed)",self.seed],["Sobrante",self.sobras],["Costo dias",self.costo_dias],["Costo sobras",self.costo_sobras],["Ganancias",self.ganancias],["Costo transporte",self.costo_transporte],["Costo trabajo",self.costo_trabajo]]
         datos=[self.dias_generados,self.dias_ocupado_tanques,self.porcentaje_tanque,self.sobras_cantidad_dia]
         p=0
         for x in datos:
@@ -253,7 +255,9 @@ def crear_excel(nombre_archivo,lista_resumenes):
     ws['I1'] = "Dias Ocupado tanques"
     ws['J1'] = "Costos dias fermentando"
     ws['K1'] = "Costos perdidas"
-    ws['L1'] = "Ganancias"
+    ws['L1'] = "Costos Transporte"
+    ws['M1'] = "Costos Trabajadores"
+    ws['N1'] = "Ganancias"
     c=2
     for i in lista_resumenes:
         G=i.gen_promedio()
@@ -268,6 +272,10 @@ def crear_excel(nombre_archivo,lista_resumenes):
         ws['I'+str(c)] = G[1][1]
         ws['J'+str(c)] = G[8][1]
         ws['K'+str(c)] = G[9][1]
+        ws['N'+str(c)] = G[10][1]
+        ws['L'+str(c)] = G[11][1]
+        ws['M'+str(c)] = G[12][1]
+
         c+=1
     wb.save(nombre)
 # funcion para llenar los tanques version 1
