@@ -14,9 +14,7 @@ binom.random_state=numpy_randomGen
 
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 
-df = pd.read_csv('solucion_18_dias.csv')
-ssss=0
-sssss=0
+df = pd.read_csv('dias 15 v2.csv')
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
 for i in range(1,65):
@@ -41,6 +39,10 @@ Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
 b=Bodega(Bodegas,"Nancagua")
 Las_Bodegas.append(b)
 
+df = pd.read_csv('trabajadores.csv')
+CTrabajo=0
+for i in df["Valor"]:
+    CTrabajo+=i
 
 dia_actual = 1
 #Cantidad de cosecha por bodega y cepa
@@ -55,6 +57,7 @@ RESUMENES=[]
 for u in range(100):
     dia_actual = 1
     resumen = Resumen()
+    resumen.costo_trabajo = CTrabajo
     seed=21234+u
     resumen.seed = seed
     scipy_randomGen = binom
@@ -92,19 +95,19 @@ for u in range(100):
                         if cuartel.precio == 1000:
                             cantidad_1000[i[0]][cuartel.variedad] += i[1]
                             despreciacion=cuartel.gen_desp(dia_actual,1000)
-                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*0.001
+                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
                             if despreciacion<despreciacion_1000[i[0]][cuartel.variedad]:
                                 despreciacion_1000[i[0]][cuartel.variedad]=despreciacion
                         elif cuartel.precio == 3000:
                             cantidad_3000[i[0]][cuartel.variedad] += i[1]
                             despreciacion=cuartel.gen_desp(dia_actual,3000)
-                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*0.001
+                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
                             if despreciacion<despreciacion_3000[i[0]][cuartel.variedad]:
                                 despreciacion_3000[i[0]][cuartel.variedad]=despreciacion
                         elif cuartel.precio == 6000:
                             cantidad_6000[i[0]][cuartel.variedad] += i[1]
                             despreciacion=cuartel.gen_desp(dia_actual,6000)
-                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*0.001
+                            resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
                             if despreciacion<despreciacion_6000[i[0]][cuartel.variedad]:
                                 despreciacion_6000[i[0]][cuartel.variedad]=despreciacion
                         else:
@@ -131,9 +134,8 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=fill_tanks(tanks, cantidad_6000[Nbodega][Ncepa])
-                    print("nuevo resultado")
+                    print("Nuevo resultado")
                     print(result)                            
                     if result:
                         for Td, fill_amount in result:
@@ -160,7 +162,6 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=comb_liquido(tanks, cantidad_6000[Nbodega][Ncepa])
                     print("nuevo resultado")
                     print(result)                            
@@ -194,7 +195,6 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=fill_tanks(tanks, cantidad_3000[Nbodega][Ncepa])
                     print("nuevo resultado")
                     print(result)                            
@@ -222,7 +222,6 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=comb_liquido(tanks, cantidad_3000[Nbodega][Ncepa])
                     print("nuevo resultado")
                     print(result)                            
@@ -257,7 +256,6 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=fill_tanks(tanks, cantidad_1000[Nbodega][Ncepa])
                     print("nuevo resultado")
                     print(result)                            
@@ -286,7 +284,6 @@ for u in range(100):
                     print("Tanques disponibles:")
                     for i in tanks:
                         print(i[1])
-                    print("testeo")
                     result=comb_liquido(tanks, cantidad_1000[Nbodega][Ncepa])
                     print("nuevo resultado")
                     print(result)                            
@@ -362,7 +359,7 @@ for u in range(100):
     RESUMENES.append(resumen)
     #resumen=0
 
-crear_excel("prueba 18 dias",RESUMENES)
+crear_excel("prueba 15 v3 dias",RESUMENES)
 #dias promedio de fermentacion (yo)) -listo
 #llenado promedio(yo)-listo
 #toneladas no cosechadas(yo) -listo

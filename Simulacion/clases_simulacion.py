@@ -185,7 +185,9 @@ class Resumen:
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
     def gen_promedio(self):
-        Promedios = [["Dias generados",],["Dias Ocupado tanques",],["Promedio de porcentaje llenado tanque",],["Promedio de sobrante por dia",],["Cosechado",self.cosechado],["Fermentado",self.fermentado],["Nombre(seed)",self.seed],["Sobrante",self.sobras],["Costo dias",self.costo_dias],["Costo sobras",self.costo_sobras],["Ganancias",self.ganancias],["Costo transporte",self.costo_transporte],["Costo trabajo",self.costo_trabajo]]
+        Ganancias_COSTO = self.ganancias-self.costo_dias-self.costo_sobras-self.costo_transporte-self.costo_trabajo
+
+        Promedios = [["Dias generados",],["Dias Ocupado tanques",],["Promedio de porcentaje llenado tanque",],["Promedio de sobrante por dia",],["Cosechado",self.cosechado],["Fermentado",self.fermentado],["Nombre(seed)",self.seed],["Sobrante",self.sobras],["Costo dias",self.costo_dias],["Costo sobras",self.costo_sobras],["Ganancias",self.ganancias],["Costo transporte",self.costo_transporte],["Costo trabajo",self.costo_trabajo],["Ganancia Bruta",Ganancias_COSTO]]
         datos=[self.dias_generados,self.dias_ocupado_tanques,self.porcentaje_tanque,self.sobras_cantidad_dia]
         p=0
         for x in datos:
@@ -258,6 +260,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
     ws['L1'] = "Costos Transporte"
     ws['M1'] = "Costos Trabajadores"
     ws['N1'] = "Ganancias"
+    ws['O1'] = "Ganancias Bruta"
     c=2
     for i in lista_resumenes:
         G=i.gen_promedio()
@@ -275,6 +278,8 @@ def crear_excel(nombre_archivo,lista_resumenes):
         ws['N'+str(c)] = G[10][1]
         ws['L'+str(c)] = G[11][1]
         ws['M'+str(c)] = G[12][1]
+        ws['O'+str(c)] = G[13][1]
+
 
         c+=1
     wb.save(nombre)
