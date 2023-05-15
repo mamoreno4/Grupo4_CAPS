@@ -309,7 +309,7 @@ def fill_tanks(tanks, liquid):
                 remaining -= fill_amount
                 leftover += capacity - fill_amount
             # Check if this is the best combination so far
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.005)) and leftover < best_leftover and n <= min_tanks_used:
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.01)) and leftover < best_leftover and n <= min_tanks_used:
                 best_combination = fill_levels
                 best_leftover = leftover
                 min_tanks_used = n
