@@ -8,7 +8,7 @@ from clases_simulacion import *
 #Cargar datos
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 #Leer solucion
-df = pd.read_csv('solucion_15_diasv2.csv')
+df = pd.read_csv('solucion_17_diasv2.csv')
 #Leer cuarteles
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
@@ -61,7 +61,7 @@ for u in range(100):
     dia_actual = 1
     resumen = Resumen()
     resumen.costo_trabajo = CTrabajo
-    seed=21234+u
+    seed=21235+u
     resumen.seed = seed
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
@@ -474,4 +474,4 @@ for u in range(100):
     RESUMENES.append(resumen)
     #resumen=0
 
-crear_excel("solucion_15_diasv3",RESUMENES)
+#crear_excel("solucion_15_diasv3",RESUMENES)
