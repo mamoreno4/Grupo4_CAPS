@@ -94,7 +94,7 @@ x = np.array(df)
 dist.fit_transform(x)
 
 # Print the results
-#print(dist.summary)
+print(dist.summary)
 
 # Plot the fitted distributions
 #dist.plot(title="M")
@@ -166,6 +166,6 @@ df = data
 df = pd.DataFrame(data[1:], columns=data[0])
 
 # save the DataFrame to an Excel file
-df.to_excel('dist.xlsx', index=False)
+#df.to_excel('dist.xlsx', index=False)
 
 
