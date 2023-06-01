@@ -4,11 +4,12 @@ import numpy as np
 import pandas as pd
 from scipy.stats import binom
 from clases_simulacion import *
-
+#este archivo es el que se debe correr para simular el caso base
+#Tiene fallas comparado con el Main final
 #Cargar datos
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 #Leer solucion
-df = pd.read_csv('solucion_15_diasv2.csv')
+df = pd.read_csv('solucion_basef.csv')
 #Leer cuarteles
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
@@ -39,7 +40,7 @@ Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
 b=Bodega(Bodegas,"Nancagua")
 Las_Bodegas.append(b)
 #leer trabajadores, agregar costo de trabajo
-df = pd.read_csv('trabajadores_15_diasv2.csv')
+df = pd.read_csv('trabajadores_basef.csv')
 CTrabajo=0
 for i in df["Valor"]:
     CTrabajo+=i

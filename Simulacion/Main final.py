@@ -6,7 +6,8 @@ from scipy.stats import binom
 from clases_simulacion import *
 import time
 inicio = time.time()
-
+#Archivo Main para la simulacion
+#nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
 # Código a medir
 time.sleep(1)
 # -------------
@@ -14,7 +15,9 @@ time.sleep(1)
 #Cargar datos
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
 #Leer solucion
-df = pd.read_csv('solucion_15_diasv2.csv')
+#archivo solucion_x se pone aqui
+#en carpeta Entradas gurobi se encuentras las posibles entradas que poner aqui
+df = pd.read_csv('solucion_17_diasv2.csv')
 #Leer cuarteles
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 Los_Cuarteles = []
@@ -45,7 +48,8 @@ Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
 b=Bodega(Bodegas,"Nancagua")
 Las_Bodegas.append(b)
 #leer trabajadores, agregar costo de trabajo
-df = pd.read_csv('trabajadores_15_diasv2.csv')
+#archivos trabajadores_x se ponen aqui
+df = pd.read_csv('trabajadores_17_diasv2.csv')
 CTrabajo=0
 for i in df["Valor"]:
     CTrabajo+=i
@@ -57,7 +61,7 @@ tamanos_T = [100,75,50,30]
 #lsita con el resumen de cada iteracon
 RESUMENES=[]
 #Iterar seeds
-for u in range(1):
+for u in range(100):
     #Cantidad de cosecha por bodega y cepa
     #dictionary = {'key':value}
     cantidad_1000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
@@ -509,4 +513,4 @@ for u in range(1):
     #resumen=0
 fin = time.time()
 print(fin-inicio) # 1.0005340576171875
-#crear_excel("solucion_15_diasv3",RESUMENES)
+crear_excel("solucion_robusta2",RESUMENES)

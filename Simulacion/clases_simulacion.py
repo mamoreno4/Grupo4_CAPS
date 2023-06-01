@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import binom
 import openpyxl
 import itertools
-
+#archivo con las clases y funciones del main
 class Cuartel:
 
     def __init__(self, listav):
@@ -309,14 +309,14 @@ def fill_tanks(tanks, liquid):
                 remaining -= fill_amount
                 leftover += capacity - fill_amount
             # Check if this is the best combination so far
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.01)) and leftover < best_leftover and n <= min_tanks_used:
+            if (remaining == 0 or (remaining>0 and remaining<liquid*0.001)) and leftover < best_leftover and n <= min_tanks_used:
                 best_combination = fill_levels
                 best_leftover = leftover
                 min_tanks_used = n
 
     return best_combination
 
-# funcion para llenar los tanques version 2
+# funcion para llenar los tanques version 2(desechada)
 def find_combination(tanks,liquid):
     # iniciar variables
     n = len(tanks)
@@ -338,41 +338,50 @@ def find_combination(tanks,liquid):
         best_combination = {}
         # iterar sobre todas las combinaciones de tanques
         for fill_amount in range(min_fill, max_fill + 1):
+            # Calculate the total capacity of the tanks
             if fill_amount <= liquid:
                 remaining_liquid = liquid - fill_amount
                 new_leftovers, combination = dp(remaining_liquid, idx + 1, num_tanks + 1)
                 new_leftovers += capacity - fill_amount
-
+                # Check if this is the best combination so far
                 if new_leftovers < best_leftovers:
                     best_leftovers = new_leftovers
                     best_combination = combination.copy()
                     best_combination[tank_name] = fill_amount
+        # Check if this is the best combination so far
         if num_tanks < best_leftovers:
+            # set memo
             memo[(liquid, idx, num_tanks)] = (num_tanks, best_combination)
             return num_tanks, best_combination
-
+        # set memo
         memo[(liquid, idx, num_tanks)] = (best_leftovers, best_combination)
         return best_leftovers, best_combination
 
     _, best_combination = dp(liquid, 0, 0)
     return best_combination
-
+# funcion para llenar los tanques version 3
 def encontrar_combinacion_liquido(liquido, tanques):
+    # Inicializar variables
     mejor_combinacion = None
     diferencia_minima = float('inf')
     num_tanques = len(tanques)
-    
+    # Iterar sobre todas las combinaciones de tanques
     for r in range(1, num_tanques + 1):
+        # Iterar sobre todas las combinaciones de tanques de tamaño r
         for combo in itertools.combinations(tanques, r):
+            # Calcular la suma de las capacidades de los tanques en la combinación
             suma_capacidades = sum(capacidad for _, capacidad in combo)
-            
+            # Verificar si la combinación es válida
             if liquido >= suma_capacidades * 0.75 and liquido <= suma_capacidades * 0.95:
+                # Calcular la diferencia entre la suma de las capacidades y el líquido
                 diferencia = abs(suma_capacidades - liquido)
+                # Verificar si la diferencia es menor a la diferencia mínima
                 if diferencia < diferencia_minima:
                     diferencia_minima = diferencia
                     mejor_combinacion = combo
     return mejor_combinacion
 
+# funcion para llenar los tanques version 3
 
 def llenar_tanques(liquido_total, tanques):
     # Ordenar los tanques por capacidad (de mayor a menor)
@@ -399,13 +408,15 @@ def llenar_tanques(liquido_total, tanques):
             break
     
     return liquido_tanques
+# funcion para llenar los tanques version 3
 
 def comb_liquido(tanques, liquido):
-
+    # Inicializar variables
     cantidad_liquido_tanques=None
     combinaciones = encontrar_combinacion_liquido(liquido, tanques)
-
+    # Verificar si se encontró una combinación
     com_best=combinaciones
+    # Verificar si se encontró una combinación
     if com_best:
         print(com_best)
         cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
