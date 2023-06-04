@@ -9,6 +9,7 @@ import itertools
 class Cuartel:
 
     def __init__(self, listav):
+        self.cosechable=0
         self.id=listav[1]
         self.variedad=listav[5]
         self.precio=listav[6]
@@ -21,6 +22,9 @@ class Cuartel:
         self.despreciacion={1000:[0.8,0.8875,0.95,0.9875,1,0.9833,0.9333,0.85],3000:[0.6,0.775,0.9,0.975,1,0.9667,0.8667,0.7],6000:[0.1,0.4938,0.775,0.9438,1,0.9111,0.6444,0.2]}
     def agregar_cosecha(self,dia,cantidad_bodega):
         self.cosecha_por_dia[dia].append(cantidad_bodega)
+        pass
+    def set_cosechable(self,cosechable):
+        self.cosechable=cosechable
         pass
     def gen_desp(self,dia,precio):
         desp=1
@@ -422,6 +426,22 @@ def comb_liquido(tanques, liquido):
         cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
     return cantidad_liquido_tanques
 
+def revisar_input(tanques_ocupados,bodegas):
+    tanques_problemas=[]
+    for i in bodegas:
+        for a in i.tanques_fermentando:
+            if a in tanques_ocupados:
+                pass
+            else:
+                tanques_problemas.append([a,"tanque no ocupado"])
+    for i in bodegas:
+        for a in i.tanques_disponibles:
+            if a in tanques_ocupados:
+                tanques_problemas.append([a,"tanque ocupado"])
+                pass
+            else:
+                pass
+    return tanques_problemas
 
-def revisar_input(input,bodegas,dia):
-    
+     
+

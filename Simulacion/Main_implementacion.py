@@ -13,15 +13,18 @@ time.sleep(1)
 # ------------------------------------------------------------
 #Cargar datos
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
+cosecha_cuarteles=pd.read_excel('./../Distribuciones/estimado cosecha.xlsx')
+cosecha_cuarteles=cosecha_cuarteles.values.tolist()
 #Leer cuarteles
 Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
 
 #PONER DATOS COSECHAS (ESTIMACION DE CADA CUARTEL)
 Los_Cuarteles = []
 #iterar por la cantidad de cuarteles
-for i in range(1,65):
+for i in range(1,61):
     #crear cuartel
     CT = Cuartel(Cuart.iloc[i-1])
+    CT.set_cosechable(cosecha_cuarteles[i-1][0])
     #agregar cuartel a la lista
     Los_Cuarteles.append(CT)
 #Leer bodegas

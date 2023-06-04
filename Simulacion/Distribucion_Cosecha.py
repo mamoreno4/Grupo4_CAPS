@@ -13,7 +13,6 @@ df = pd.read_excel("Datos base G4 (2).xlsx", sheet_name='Histórico de cosechas'
 x = np.array(df)
 distr_cuart=[]
 for i in x:
-    print(i)
     # Fit distributions
     # dist = distfit()
     # dist.fit_transform(i)
@@ -21,3 +20,4 @@ for i in x:
     # Plot the fitted distributions
     Generar_data_cuarteles=i.mean()+i.std()
     distr_cuart.append(Generar_data_cuarteles)
+# print(distr_cuart)
