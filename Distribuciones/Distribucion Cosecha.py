@@ -11,17 +11,13 @@ import math
 #Cosechas
 df = pd.read_excel("Datos base G4 (2).xlsx", sheet_name='Histórico de cosechas')
 x = np.array(df)
-# Fit distributions
-dist = distfit()
-dist.fit_transform(x)
-
-# Print the results
-print(dist.summary)
-# Plot the fitted distributions
-dist.plot()
-print(dist.plot_summary())  
-a=dist.model["params"][0]
-b=dist.model["params"][1]
-c=dist.model["params"][2]
-d=dist.model["params"][3]
-Generar_data_cuarteles=sc.stats.beta.rvs(a,b,loc=c,scale=d,size=60)
+distr_cuart=[]
+for i in x:
+    print(i)
+    # Fit distributions
+    # dist = distfit()
+    # dist.fit_transform(i)
+    # Print the results
+    # Plot the fitted distributions
+    Generar_data_cuarteles=i.mean()+i.std()
+    distr_cuart.append(Generar_data_cuarteles)
