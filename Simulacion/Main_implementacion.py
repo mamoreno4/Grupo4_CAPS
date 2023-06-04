@@ -7,10 +7,9 @@ from clases_simulacion import *
 import time
 inicio = time.time()
 #Archivo Main para la simulacion
-#nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
-# Código a medir
+#Nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
+#Código a medir
 time.sleep(1)
-#Poblar clases
 # ------------------------------------------------------------
 #Cargar datos
 Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
@@ -40,6 +39,7 @@ Las_Bodegas.append(b)
 #lsita con el resumen de cada iteracon
 RESUMENES=[]
 
+#Poblar clases
 
 # ------------------------------------------------------------
 #Cantidad de cosecha por bodega y cepa

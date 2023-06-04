@@ -6,7 +6,9 @@ from scipy.stats import binom
 from clases_simulacion import *
 import time
 inicio = time.time()
-#Archivo Main para la simulacion
+#PARA IMLEMENTACION CON EL GUROBI REVISAR EL ARCHIVO Main_implementacion.py.
+
+#Archivo Main para la simulacion entrega 2, no confundir con entrega 3
 #nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
 # Código a medir
 time.sleep(1)
