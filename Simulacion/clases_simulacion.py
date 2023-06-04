@@ -421,3 +421,7 @@ def comb_liquido(tanques, liquido):
         print(com_best)
         cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
     return cantidad_liquido_tanques
+
+
+def revisar_input(input,bodegas,dia):
+    
