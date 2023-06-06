@@ -151,12 +151,16 @@ while ((dia_actual < 150)):
 #Se imprime el resumen de todo lo fermentado y sobrasa
 #resumen.imprimir_resumen()
 RESUMENES.append(resumen)
-
-
-
-
 fin = time.time()
 print(fin-inicio) # 1.0005340576171875
+# ------------------------------------------------------------
+
+dia_inicio=dia_actual
+largo_periodo=7
+estanques_ocupados_actual=pasar_tanques_dict(Las_Bodegas,dia_actual)
+total_cosechar_actual=pasar_cuartel_dict(Los_Cuarteles)
+
+
 #crear_excel("solucion_robusta2",RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK

@@ -445,3 +445,21 @@ def revisar_input(tanques_ocupados,bodegas):
 
      
 
+def pasar_tanques_dict(BODEGAS,dia):
+    tanques_ocupados={}
+    for i in BODEGAS:
+        for a in i.tanques_fermentando:
+            bod=str(i)[7::]
+            id=str(a.id)
+            nombre="estanque_"+bod+"_"+id
+            nombre=nombre.lower()
+            tanques_ocupados[nombre]={}
+            for i in range(dia-a.dia_inicial+1):
+                tanques_ocupados[nombre]["dia_"+str(i)]=1            
+    return tanques_ocupados
+def pasar_cuartel_dict(cuarteles):
+    cosechar={}
+    for i in cuarteles:
+        nombre="cuartel_"+str(i.id)
+        cosechar[nombre]=i.cosechable
+
