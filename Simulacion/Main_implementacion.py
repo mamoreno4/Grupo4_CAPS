@@ -63,11 +63,14 @@ numpy_randomGen = Generator(PCG64(seed))
 binom.random_state=numpy_randomGen
 # ------------------------------------------------------------
 #VER COMO LEER DATOS GUROBI
+diccionario_datos_cosecha = cosecha.to_dict(orient='records')
+diccionario_datos_estanques = estanques.to_dict(orient='records')
 
 
-
-
-
+for elemento in diccionario_datos_cosecha:
+    for cuartel in Los_Cuarteles:
+        if cuartel == elemento['Cuartel']:
+            cuartel.agregar_cosecha(elemento['Dia'].split("_")[1], elemento['Valor'])
 
 #Iterar dias
 while ((dia_actual < 150)):
