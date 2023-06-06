@@ -460,6 +460,6 @@ def pasar_tanques_dict(BODEGAS,dia):
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
-        nombre="cuartel_"+str(i.id)
+        nombre="cuartel_"+str(i.id)[:-2]
         cosechar[nombre]=i.cosechable
-
+    return cosechar
