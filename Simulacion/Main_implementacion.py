@@ -11,69 +11,33 @@ inicio = time.time()
 #Código a medir
 time.sleep(1)
 # ------------------------------------------------------------
-#Cargar datos
-Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
-cosecha_cuarteles=pd.read_excel('./../Distribuciones/estimado cosecha.xlsx')
-cosecha_cuarteles=cosecha_cuarteles.values.tolist()
-#Leer cuarteles
-Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
-
-#PONER DATOS COSECHAS (ESTIMACION DE CADA CUARTEL)
-Los_Cuarteles = []
-#iterar por la cantidad de cuarteles
-for i in range(1,61):
-    #crear cuartel
-    CT = Cuartel(Cuart.iloc[i-1])
-    CT.set_cosechable(cosecha_cuarteles[i-1][0])
-    #agregar cuartel a la lista
-    Los_Cuarteles.append(CT)
-#Leer bodegas
-Las_Bodegas = []
-Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Machali")
-#agregar datos de bodega a la lista, tambien agrega los tanques a las bodegas correspondientes
-b=Bodega(Bodegas,"Machali")
-Las_Bodegas.append(b)
-Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Chépica")
-b=Bodega(Bodegas,"Chepica")
-Las_Bodegas.append(b)
-Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
-b=Bodega(Bodegas,"Nancagua")
-Las_Bodegas.append(b)
-#lsita con el resumen de cada iteracon
-RESUMENES=[]
-
-#Poblar clases
 
 # ------------------------------------------------------------
-#Cantidad de cosecha por bodega y cepa
-#dictionary = {'key':value}
-cantidad_1000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
-cantidad_3000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
-cantidad_6000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
 #inicializar variables
 dia_actual = 1
+largo_periodo = 7
 #Crear resumen
 resumen = Resumen()
 resumen.costo_trabajo = 0
 #setear escenario
-seed=21235+u
+seed=21235
 resumen.seed = seed
 scipy_randomGen = binom
 numpy_randomGen = Generator(PCG64(seed))
 binom.random_state=numpy_randomGen
 # ------------------------------------------------------------
+#Poblar clases
+Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES=crear_clases()
 #VER COMO LEER DATOS GUROBI
-diccionario_datos_cosecha = cosecha.to_dict(orient='records')
-diccionario_datos_estanques = estanques.to_dict(orient='records')
-
-
-for elemento in diccionario_datos_cosecha:
-    for cuartel in Los_Cuarteles:
-        if cuartel == elemento['Cuartel']:
-            cuartel.agregar_cosecha(elemento['Dia'].split("_")[1], elemento['Valor'])
+diccionario_datos_estanques=leer_gurobi(Los_Cuarteles)
 
 #Iterar dias
-while ((dia_actual < 150)):
+while (dia_actual <= largo_periodo):
+    #Cantidad de cosecha por bodega y cepa
+    #dictionary = {'key':value}
+    cantidad_1000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
+    cantidad_3000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
+    cantidad_6000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
     print("Dia " + str(dia_actual))
     #Revisar fermentacion saliente diaria por bodega
     for bodega in Las_Bodegas:
@@ -146,9 +110,6 @@ while ((dia_actual < 150)):
         pass
 
     #restablecer cosecha del dia
-    cantidad_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-    cantidad_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
-    cantidad_6000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
     dia_actual +=1
 
 #Se imprime el resumen de todo lo fermentado y sobrasa

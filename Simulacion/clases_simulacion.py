@@ -463,3 +463,48 @@ def pasar_cuartel_dict(cuarteles):
         nombre="cuartel_"+str(i.id)[:-2]
         cosechar[nombre]=i.cosechable
     return cosechar
+
+
+def crear_clases():
+    #Cargar datos
+    Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
+    cosecha_cuarteles=pd.read_excel('./../Distribuciones/estimado cosecha.xlsx')
+    cosecha_cuarteles=cosecha_cuarteles.values.tolist()
+    #Leer cuarteles
+    Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
+
+    #PONER DATOS COSECHAS (ESTIMACION DE CADA CUARTEL)
+    Los_Cuarteles = []
+    #iterar por la cantidad de cuarteles
+    for i in range(1,61):
+        #crear cuartel
+        CT = Cuartel(Cuart.iloc[i-1])
+        CT.set_cosechable(cosecha_cuarteles[i-1][0])
+        #agregar cuartel a la lista
+        Los_Cuarteles.append(CT)
+    #Leer bodegas
+    Las_Bodegas = []
+    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Machali")
+    #agregar datos de bodega a la lista, tambien agrega los tanques a las bodegas correspondientes
+    b=Bodega(Bodegas,"Machali")
+    Las_Bodegas.append(b)
+    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Chépica")
+    b=Bodega(Bodegas,"Chepica")
+    Las_Bodegas.append(b)
+    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
+    b=Bodega(Bodegas,"Nancagua")
+    Las_Bodegas.append(b)
+    #lsita con el resumen de cada iteracon
+    RESUMENES=[]
+    return Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES
+
+def leer_gurobi(Los_Cuarteles,cosecha,estanques):
+    diccionario_datos_cosecha = cosecha.to_dict(orient='records')
+    diccionario_datos_estanques = estanques.to_dict(orient='records')
+    for elemento in diccionario_datos_cosecha:
+        for cuartel in Los_Cuarteles:
+            if cuartel == elemento['Cuartel']:
+                cuartel.agregar_cosecha(elemento['Dia'].split("_")[1], elemento['Valor'])
+    return diccionario_datos_estanques
+
+
