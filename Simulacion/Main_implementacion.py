@@ -1,3 +1,5 @@
+# %%
+
 from random import uniform, seed, randint, gauss
 from numpy.random import Generator, PCG64
 import numpy as np
@@ -5,6 +7,7 @@ import pandas as pd
 from scipy.stats import binom
 from clases_simulacion import *
 import time
+from pp import *
 inicio = time.time()
 #Archivo Main para la simulacion
 #Nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
@@ -29,7 +32,15 @@ binom.random_state=numpy_randomGen
 #Poblar clases
 Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES=crear_clases()
 #VER COMO LEER DATOS GUROBI
-diccionario_datos_estanques=leer_gurobi(Los_Cuarteles)
+# %%
+cosecha, trabajadores, estanques = optimizacion_cosecha(1, 40,estanques_ocupados, total_cosechar, 0.15)
+# %%
+
+leer_gurobi(Los_Cuarteles,cosecha,estanques)
+print(revisar_input(estanques,Las_Bodegas))
+
+# %%
+
 
 #Iterar dias
 while (dia_actual <= largo_periodo):

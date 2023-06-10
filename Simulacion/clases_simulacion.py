@@ -427,6 +427,7 @@ def comb_liquido(tanques, liquido):
     return cantidad_liquido_tanques
 
 def revisar_input(tanques_ocupados,bodegas):
+    diccionario_datos_estanques = estanques.to_dict(orient='records')
     tanques_problemas=[]
     for i in bodegas:
         for a in i.tanques_fermentando:
@@ -484,14 +485,14 @@ def crear_clases():
         Los_Cuarteles.append(CT)
     #Leer bodegas
     Las_Bodegas = []
-    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Machali")
+    Bodegas = pd.read_excel("Datos base G42.xlsx",sheet_name="Bodega Machali")
     #agregar datos de bodega a la lista, tambien agrega los tanques a las bodegas correspondientes
     b=Bodega(Bodegas,"Machali")
     Las_Bodegas.append(b)
-    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Chépica")
+    Bodegas = pd.read_excel("Datos base G42.xlsx",sheet_name="Bodega Chépica")
     b=Bodega(Bodegas,"Chepica")
     Las_Bodegas.append(b)
-    Bodegas = pd.read_excel("Datos base G4.xlsx",sheet_name="Bodega Nancagua")
+    Bodegas = pd.read_excel("Datos base G42.xlsx",sheet_name="Bodega Nancagua")
     b=Bodega(Bodegas,"Nancagua")
     Las_Bodegas.append(b)
     #lsita con el resumen de cada iteracon
@@ -503,8 +504,9 @@ def leer_gurobi(Los_Cuarteles,cosecha,estanques):
     diccionario_datos_estanques = estanques.to_dict(orient='records')
     for elemento in diccionario_datos_cosecha:
         for cuartel in Los_Cuarteles:
-            if cuartel == elemento['Cuartel']:
-                cuartel.agregar_cosecha(elemento['Dia'].split("_")[1], elemento['Valor'])
+            C='cuartel_'+str(cuartel.id).split('.')[0]
+            if C == elemento['Cuartel']:
+                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), elemento['Valor'])
     return diccionario_datos_estanques
 
 
