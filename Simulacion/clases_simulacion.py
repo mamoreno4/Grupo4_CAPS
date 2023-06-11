@@ -50,7 +50,12 @@ class Bodega:
             T=Tanque(Tanq[1],self.ubicacion,Tanq[0])
             self.agregar_tanque_disponible(T)
         pass
-
+    def devolver_tanque_id(self,id):
+        for i in self.tanques:
+            if i.id==id:
+                return i
+        return None
+    
     def agregar_tanque_disponible(self,tanque):
         self.tanques.append(tanque)
         self.tanques_disponibles.append(tanque)
@@ -426,22 +431,34 @@ def comb_liquido(tanques, liquido):
         cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
     return cantidad_liquido_tanques
 
-def revisar_input(tanques_ocupados,bodegas):
-    diccionario_datos_estanques = estanques.to_dict(orient='records')
+def pasar_tanques_a_diario(tanques_ocupados):
+    diccionario_datos_estanques = tanques_ocupados.to_dict(orient='records')
+    dic_tanques_dia={}
+    for i in range(1,100):
+        di="dia_"+str(i)
+        dic_tanques_dia[di]=[]
+    for i in diccionario_datos_estanques:
+        if i["Dia"] in dic_tanques_dia:
+            dic_tanques_dia[i["Dia"]].append(i)
+        else:
+            dic_tanques_dia[i["Dia"]]=[i]
+    return dic_tanques_dia
+
+def revisar_input(tanques_ocupados,bodegas,dia):
     tanques_problemas=[]
-    for i in bodegas:
-        for a in i.tanques_fermentando:
-            if a in tanques_ocupados:
-                pass
-            else:
-                tanques_problemas.append([a,"tanque no ocupado"])
-    for i in bodegas:
-        for a in i.tanques_disponibles:
-            if a in tanques_ocupados:
-                tanques_problemas.append([a,"tanque ocupado"])
-                pass
-            else:
-                pass
+    di="dia_"+str(dia)
+    tanque_a_usar=tanques_ocupados[di]
+    for b in tanque_a_usar:
+        id=int(b["Estanque"].split("_")[2])
+        ub=b["Bodega"]
+        for i in bodegas:
+            if i.ubicacion==ub:
+                for a in i.tanques_fermentando:
+                    if a.id==id:
+                        tanques_problemas.append([a,"tanque ocupado"])
+                for a in i.tanques_disponibles:
+                    if a.id==id:
+                        tanques_problemas.append([a,"tanque disponible"])
     return tanques_problemas
 
      
@@ -499,14 +516,19 @@ def crear_clases():
     RESUMENES=[]
     return Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES
 
-def leer_gurobi(Los_Cuarteles,cosecha,estanques):
+def leer_gurobi(Los_Cuarteles,cosecha):
     diccionario_datos_cosecha = cosecha.to_dict(orient='records')
-    diccionario_datos_estanques = estanques.to_dict(orient='records')
     for elemento in diccionario_datos_cosecha:
         for cuartel in Los_Cuarteles:
             C='cuartel_'+str(cuartel.id).split('.')[0]
             if C == elemento['Cuartel']:
-                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), elemento['Valor'])
-    return diccionario_datos_estanques
+                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],elemento['Valor']])
 
-
+def tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad):
+    tanques_a_usar=[]
+    if dia in dict_diario:
+        for i in dict_diario[dia]:
+            if i["Bodega"]==Nbodega and i["Cepa"]==Ncepa and int(i["Calidad"])==calidad:
+                id_tanque=i["Estanque"].split("_")[2]
+                tanques_a_usar.append([Nbodega,Ncepa,calidad,id_tanque])
+    return tanques_a_usar
