@@ -17,8 +17,8 @@ time.sleep(1)
 
 # ------------------------------------------------------------
 #inicializar variables
-dia_actual = 12
-largo_periodo = 17
+dia_actual = 1
+largo_periodo = 79
 #Crear resumen
 resumen = Resumen()
 resumen.costo_trabajo = 0
@@ -64,13 +64,13 @@ while (dia_actual <= 99):
                 pass
         # ------------------------------------------------------------
     #Revisar si los tanques correspondientes esta disponibles
-    if (dia_actual <= 79):
+    if (dia_actual <= 1):
         estanques_ocupados=pasar_tanques_dict(Las_Bodegas,dia_actual)
         total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
         for a in Los_Cuarteles:
             for i in range(1,100):
                 a.cosecha_por_dia[i]=[]
-        cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.05)
+        cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.001)
         dict_diario=pasar_tanques_a_diario(estanques)
         leer_gurobi(Los_Cuarteles,cosecha)    
         
@@ -282,7 +282,7 @@ print(fin-inicio) # 1.0005340576171875
 
 # %%
 
-crear_excel("solucion_impl",RESUMENES)
+crear_excel("solucion_21d_impl0.001test",RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 

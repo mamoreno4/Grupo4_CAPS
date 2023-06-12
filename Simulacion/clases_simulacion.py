@@ -276,7 +276,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
         G=i.gen_promedio()
         ws['A'+str(c)] = G[6][1]
         ws['B'+str(c)] = G[4][1]
-        ws['C'+str(c)] = 3754.4000000000024 - G[4][1]
+        ws['C'+str(c)] = 3041.59 - G[4][1]
         ws['D'+str(c)] = G[5][1]
         ws['E'+str(c)] = G[7][1]
         ws['F'+str(c)] = G[3][1]
