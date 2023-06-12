@@ -18,7 +18,7 @@ for i in x:
     # dist.fit_transform(i)
     # Print the results
     # Plot the fitted distributions
-    Generar_data_cuarteles=i.mean()+i.std()
+    Generar_data_cuarteles=round(i.mean()+i.std(),2)
     distr_cuart.append([Generar_data_cuarteles])
 
 # create a NumPy array
