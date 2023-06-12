@@ -17,8 +17,8 @@ time.sleep(1)
 
 # ------------------------------------------------------------
 #inicializar variables
-dia_actual = 1
-largo_periodo = 79
+dia_actual = 12
+largo_periodo = 21
 #Crear resumen
 resumen = Resumen()
 resumen.costo_trabajo = 0
@@ -282,7 +282,7 @@ print(fin-inicio) # 1.0005340576171875
 
 # %%
 
-crear_excel("solucion_21d_impl0.001test",RESUMENES)
+crear_excel("solucion_21d_impl0.001",RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 
