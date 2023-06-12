@@ -1,5 +1,6 @@
 # %%
 
+
 from random import uniform, seed, randint, gauss
 from numpy.random import Generator, PCG64
 import numpy as np
@@ -14,11 +15,12 @@ inicio = time.time()
 #Código a medir
 time.sleep(1)
 # ------------------------------------------------------------
+# %%
 
 # ------------------------------------------------------------
 #inicializar variables
 dia_actual = 1
-largo_periodo = 7
+largo_periodo = 40
 #Crear resumen
 resumen = Resumen()
 resumen.costo_trabajo = 0
@@ -33,14 +35,10 @@ binom.random_state=numpy_randomGen
 Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES=crear_clases()
 #VER COMO LEER DATOS GUROBI
 # %%
-cosecha, trabajadores, estanques = optimizacion_cosecha(1, 40,estanques_ocupados, total_cosechar, 0.15)
+cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual, largo_periodo,estanques_ocupados, total_cosechar, 0.15)
+dict_diario=pasar_tanques_a_diario(estanques)
+leer_gurobi(Los_Cuarteles,cosecha)
 # %%
-
-leer_gurobi(Los_Cuarteles,cosecha,estanques)
-print(revisar_input(estanques,Las_Bodegas))
-
-# %%
-
 
 #Iterar dias
 while (dia_actual <= largo_periodo):
@@ -69,8 +67,11 @@ while (dia_actual <= largo_periodo):
                     resumen.fermentado_6000[bodega.ubicacion][salida[1]] += salida[0]
                 pass
         # ------------------------------------------------------------
-        #REVISAR SI FALLO ALGO (BRREAK?)
-
+    #Revisar si los tanques correspondientes esta disponibles
+    revisado=revisar_input(dict_diario,Las_Bodegas,dia_actual)
+    for i in revisado:
+        if i[1]=="tanque ocupado":
+            print("El tanque "+str(i[0])+" esta ocupado")
     #crear diccionarios de despreciacion de la uva, segun dia cosechado
     despreciacion_1000 = {'Machali':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Chepica':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Nancagua':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}}
     despreciacion_3000 = {'Machali':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Chepica':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Nancagua':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}}
@@ -112,10 +113,94 @@ while (dia_actual <= largo_periodo):
                 pass
     #PONER AQUI EL CODIGO PARA USAR LOS TANQUES
     #REVISAR SI FALLO ALGO (BRREAK?)
-
-
-
-
+    for bodega in Las_Bodegas:
+        #establecer bodega actual
+        Nbodega = bodega.ubicacion
+        #iterar por cepa y precio
+        for Ncepa in cantidad_6000[Nbodega]:
+            calidad=6000
+            cantidad=cantidad_6000[Nbodega][Ncepa]
+            if cantidad>=30*0.75:
+                dia="dia_"+str(dia_actual)
+                tanques_a_usar=tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad)
+                tanks=[]
+                for i in tanques_a_usar:
+                    id=int(i[3])
+                    TTT=bodega.devolver_tanque_id(id)
+                    tanks.append((TTT,TTT.capacidad))
+                result=comb_liquido(tanks, cantidad)
+                print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                print(result)
+                print(tanques_a_usar)
+                if result:
+                        print("Combina tanques encontrada V1")
+                        #iterar por tanques y cantidad de uva
+                        for Td, fill_amount in result:
+                            Td.fermentar(fill_amount, dia_actual, Ncepa, 6000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.dias_generados.append(Td.generado)
+                            cantidad_6000[Nbodega][Ncepa] -= fill_amount
+                            resumen.porcentaje_tanque.append(fill_amount/Td.capacidad)
+                            resumen.costo_dias+=fill_amount*25*Td.generado*1000
+                            resumen.ganancias+=fill_amount*1000*6000*despreciacion_6000[Nbodega][Ncepa]
+                            print(Td,fill_amount)
+                            print(cantidad_6000[Nbodega][Ncepa])
+        for Ncepa in cantidad_3000[Nbodega]:
+            calidad=3000
+            cantidad=cantidad_3000[Nbodega][Ncepa]
+            if cantidad>=30*0.75:
+                dia="dia_"+str(dia_actual)
+                tanques_a_usar=tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad)
+                tanks=[]
+                for i in tanques_a_usar:
+                    id=int(i[3])
+                    TTT=bodega.devolver_tanque_id(id)
+                    tanks.append((TTT,TTT.capacidad))
+                result=comb_liquido(tanks, cantidad)
+                print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                print(result)
+                print(tanques_a_usar)
+                if result:
+                        print("Combina tanques encontrada V1")
+                        #iterar por tanques y cantidad de uva
+                        for Td, fill_amount in result:
+                            Td.fermentar(fill_amount, dia_actual, Ncepa, 3000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.dias_generados.append(Td.generado)
+                            cantidad_3000[Nbodega][Ncepa] -= fill_amount
+                            resumen.porcentaje_tanque.append(fill_amount/Td.capacidad)
+                            resumen.costo_dias+=fill_amount*25*Td.generado*1000
+                            resumen.ganancias+=fill_amount*1000*3000*despreciacion_3000[Nbodega][Ncepa]
+                            print(Td,fill_amount)
+                            print(cantidad_3000[Nbodega][Ncepa])
+        for Ncepa in cantidad_1000[Nbodega]:
+            calidad=1000
+            cantidad=cantidad_1000[Nbodega][Ncepa]
+            if cantidad>=30*0.75:
+                dia="dia_"+str(dia_actual)
+                tanques_a_usar=tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad)
+                tanks=[]
+                for i in tanques_a_usar:
+                    id=int(i[3])
+                    TTT=bodega.devolver_tanque_id(id)
+                    tanks.append((TTT,TTT.capacidad))
+                result=comb_liquido(tanks, cantidad)
+                print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                print(result)
+                print(tanques_a_usar)
+                if result:
+                        print("Combina tanques encontrada V1")
+                        #iterar por tanques y cantidad de uva
+                        for Td, fill_amount in result:
+                            Td.fermentar(fill_amount, dia_actual, Ncepa, 1000, Distribuciones)
+                            bodega.agregar_tanque_fermentando(Td)
+                            resumen.dias_generados.append(Td.generado)
+                            cantidad_1000[Nbodega][Ncepa] -= fill_amount
+                            resumen.porcentaje_tanque.append(fill_amount/Td.capacidad)
+                            resumen.costo_dias+=fill_amount*25*Td.generado*1000
+                            resumen.ganancias+=fill_amount*1000*1000*despreciacion_1000[Nbodega][Ncepa]
+                            print(Td,fill_amount)
+                            print(cantidad_1000[Nbodega][Ncepa])
     if len(resumen.dias[dia_actual]) > 0:
         print(resumen.dias[dia_actual])
         pass
@@ -132,9 +217,10 @@ print(fin-inicio) # 1.0005340576171875
 
 dia_inicio=dia_actual
 largo_periodo=7
-estanques_ocupados_actual=pasar_tanques_dict(Las_Bodegas,dia_actual)
-total_cosechar_actual=pasar_cuartel_dict(Los_Cuarteles)
+estanques_ocupados=pasar_tanques_dict(Las_Bodegas,dia_actual)
+total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
 
+# %%
 
 #crear_excel("solucion_robusta2",RESUMENES)
 # ------------------------------------------------------------
