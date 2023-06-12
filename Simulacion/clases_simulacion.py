@@ -10,6 +10,7 @@ class Cuartel:
 
     def __init__(self, listav):
         self.cosechable=0
+        self.factor=1
         self.id=listav[1]
         self.variedad=listav[5]
         self.precio=listav[6]
@@ -404,8 +405,8 @@ def llenar_tanques(liquido_total, tanques):
         nombre_tanque, capacidad_tanque = tanque
         
         # Calcular la cantidad de líquido a poner en el tanque actual
-        min_liquido = int(0.75 * capacidad_tanque)  # 75% de la capacidad del tanque
-        max_liquido = int(0.95 * capacidad_tanque)  # 95% de la capacidad del tanque
+        min_liquido = float(0.75 * capacidad_tanque)  # 75% de la capacidad del tanque
+        max_liquido = float(0.95 * capacidad_tanque)  # 95% de la capacidad del tanque
         
         cantidad_liquido = min(liquido_total, max_liquido)
         
@@ -466,20 +467,22 @@ def revisar_input(tanques_ocupados,bodegas,dia):
 def pasar_tanques_dict(BODEGAS,dia):
     tanques_ocupados={}
     for i in BODEGAS:
+        bod=i.ubicacion
         for a in i.tanques_fermentando:
-            bod=str(i)[7::]
+            
             id=str(a.id)
             nombre="estanque_"+bod+"_"+id
             nombre=nombre.lower()
             tanques_ocupados[nombre]={}
-            for i in range(dia-a.dia_inicial+1):
+            diat=a.dia_termino
+            for i in range(dia,a.dia_termino+1):
                 tanques_ocupados[nombre]["dia_"+str(i)]=1            
     return tanques_ocupados
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
         nombre="cuartel_"+str(i.id)[:-2]
-        cosechar[nombre]=i.cosechable
+        cosechar[nombre]=max(i.cosechable/i.factor,0)
     return cosechar
 
 
@@ -490,6 +493,8 @@ def crear_clases():
     cosecha_cuarteles=cosecha_cuarteles.values.tolist()
     #Leer cuarteles
     Cuart = pd.read_excel('Datos Base Ordenados (Cosecha).xlsx')
+    Cuartf = pd.read_excel('Datos base G4.xlsx')
+
 
     #PONER DATOS COSECHAS (ESTIMACION DE CADA CUARTEL)
     Los_Cuarteles = []
@@ -497,6 +502,7 @@ def crear_clases():
     for i in range(1,61):
         #crear cuartel
         CT = Cuartel(Cuart.iloc[i-1])
+        CT.factor = Cuartf.iloc[i-1][6]
         CT.set_cosechable(cosecha_cuarteles[i-1][0])
         #agregar cuartel a la lista
         Los_Cuarteles.append(CT)

@@ -75,10 +75,12 @@ productividad_cuartel = {}
 
 # Precio de venta por cuartel
 precio_venta = {}
-
+cosecha_cuarteles=pd.read_excel('./../Distribuciones/estimado cosecha.xlsx')
+cosecha_cuarteles=cosecha_cuarteles.values.tolist()
 # %%
+for ID in range(1, 61):
+    total_cosechar[f'cuartel_{int(ID)}'] = cosecha_cuarteles[ID-1][0]
 for ID, Precio, Factor, Variedad, Dia_inicial, Dia_final in zip(datos1['ID'], datos1['Precio'], datos1['Factor'], datos1['Variedad'], datos1['Dia_inicial'], datos1['Dia_final']):
-    total_cosechar[f'cuartel_{int(ID)}'] = 72.2
     precio_venta[f'cuartel_{ID}'] = Precio
     if Precio == 1000:
         productividad_cuartel[f'cuartel_{int(ID)}'] = 0.5
@@ -339,8 +341,7 @@ capacidad_maxima = {'Nancagua': nancagua['capacidad tanques (miles de litros)'].
 capacidad_minima = {'Nancagua': min(nancagua['capacidad tanques (miles de litros)'])*llenado_minimo, 'Chepica': min(chepica['capacidad tanques (miles de litros)'])*llenado_minimo, 'Machali': min(machali['capacidad tanques (miles de litros)'])*llenado_minimo}
 
 # %%
-estanques_ocupados = {'estanque_machali_1': {'dia_1': 1, 'dia_2': 1, 'dia_3': 1},
-                      'estanque_nancagua_1': {'dia_1': 1, 'dia_2': 1, 'dia_3': 1}}
+estanques_ocupados = {}
 
 # %%
 def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, total_cosechar_actual, gap):
@@ -365,7 +366,7 @@ def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, t
             d_a = []
             for j in range(0, promedio_fermentacion[c]):
                 d_a.append(f'dia_{i+j}')
-            dias_agrupados[f'agrupacion_{i}'] = d_a
+            dias_agrupados[f'agrupacion_{i-dia_inicio+1}'] = d_a
         agrupacion[c] = dias_agrupados
     agrupaciones_cepa = {}
     for c in cepas:
