@@ -158,7 +158,7 @@ class Resumen:
         self.seed=0
         self.sobras_cantidad_dia=[]
         self.porcentaje_tanque=[]
-        self.total_cosechable=3753.4200000000023
+        self.total_cosechable=3041.59
         self.dias_ocupado_tanques=[]
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -178,7 +178,7 @@ class Resumen:
     def agregar_dia(self,dia):
         self.dias[dia]=[]
         pass
-
+    
     def agregar_cosecha(self,dia,cosecha):
         self.dias[dia].append("Se cosecho "+cosecha)
         pass
@@ -475,14 +475,14 @@ def pasar_tanques_dict(BODEGAS,dia):
             nombre=nombre.lower()
             tanques_ocupados[nombre]={}
             diat=a.dia_termino
-            for i in range(dia,a.dia_termino+1):
+            for i in range(dia,min(a.dia_termino+1,79)):
                 tanques_ocupados[nombre]["dia_"+str(i)]=1            
     return tanques_ocupados
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
         nombre="cuartel_"+str(i.id)[:-2]
-        cosechar[nombre]=max(i.cosechable/i.factor,0)
+        cosechar[nombre]=max(round(i.cosechable/i.factor),0)
     return cosechar
 
 
@@ -528,7 +528,7 @@ def leer_gurobi(Los_Cuarteles,cosecha):
         for cuartel in Los_Cuarteles:
             C='cuartel_'+str(cuartel.id).split('.')[0]
             if C == elemento['Cuartel']:
-                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],elemento['Valor']])
+                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],round(elemento['Valor'],2)])
 
 def tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad):
     tanques_a_usar=[]

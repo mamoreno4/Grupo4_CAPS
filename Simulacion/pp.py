@@ -350,7 +350,9 @@ def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, t
     estanques_ocupados_actual: dict
     total_cosechar_actual: dict
     gap: float
-
+    if largo_periodo+dia_inicio > datos1['Dia_final'].max():
+        largo_periodo=datos1['Dia_final'].max()-dia_inicio
+        
     periodo_cosecha = []
     for i in range(dia_inicio, dia_inicio + largo_periodo):
         periodo_cosecha.append(f'dia_{i}')

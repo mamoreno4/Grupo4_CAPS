@@ -17,8 +17,8 @@ time.sleep(1)
 
 # ------------------------------------------------------------
 #inicializar variables
-dia_actual = 13
-largo_periodo = 20
+dia_actual = 12
+largo_periodo = 17
 #Crear resumen
 resumen = Resumen()
 resumen.costo_trabajo = 0
@@ -64,16 +64,17 @@ while (dia_actual <= 99):
                 pass
         # ------------------------------------------------------------
     #Revisar si los tanques correspondientes esta disponibles
-    if (dia_actual <= 78):
+    if (dia_actual <= 79):
         estanques_ocupados=pasar_tanques_dict(Las_Bodegas,dia_actual)
-        revisado=revisar_input(dict_diario,Las_Bodegas,dia_actual)
+        total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
         for a in Los_Cuarteles:
             for i in range(1,100):
                 a.cosecha_por_dia[i]=[]
-        cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.1)
+        cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.05)
         dict_diario=pasar_tanques_a_diario(estanques)
-        leer_gurobi(Los_Cuarteles,cosecha)    total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
-
+        leer_gurobi(Los_Cuarteles,cosecha)    
+        
+    revisado=revisar_input(dict_diario,Las_Bodegas,dia_actual)
     for i in revisado:
         if i[1]=="tanque ocupado":
             print("El tanque "+str(i[0])+" esta ocupado")
@@ -91,7 +92,7 @@ while (dia_actual <= 99):
                     #agregar cosecha al resumen
                     if i[1] > 1:
                         resumen.cosechado +=i[1]
-                        cuartel.cosechable -= i[1]
+                        cuartel.cosechable -= round(i[1],2)
                     #agregar cosecha por precio al diccionario con las bodegas y cepas del dia
                     if cuartel.precio == 1000:
                         cantidad_1000[i[0]][cuartel.variedad] += i[1]
