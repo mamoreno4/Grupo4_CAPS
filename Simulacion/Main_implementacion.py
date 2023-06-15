@@ -85,7 +85,8 @@ while (dia_actual <= 79 or fermentando == True):
             for a in Los_Cuarteles:
                 for i in range(1,100):
                     a.cosecha_por_dia[i]=[]
-            cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.01)
+            print(total_cosechar)
+            cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.005)
             dict_diario=pasar_tanques_a_diario(estanques)
             trab=leer_gurobi(Los_Cuarteles,cosecha,trabajadores)
             diferencia=False
@@ -115,9 +116,12 @@ while (dia_actual <= 79 or fermentando == True):
                         cuartel.cosechable -= i[1]
                         print(i[1])
                         print(cuartel.cosechable)
+                        if cuartel.cosechable < 0.001:
+                            cuartel.cosechable = 0
+                            print("Cuartel " + str(cuartel)+" cosechado")
                     #agregar cosecha por precio al diccionario con las bodegas y cepas del dia
                     if cuartel.precio == 1000:
-                        cantidad_1000[i[0]][cuartel.variedad] += i[1]
+                        cantidad_1000[i[0]][cuartel.variedad] += round(i[1],3)
                         #revisar despreciacion de la uva
                         despreciacion=cuartel.gen_desp(dia_actual,1000)
                         #agregar costo de transporte al resumen
@@ -126,13 +130,13 @@ while (dia_actual <= 79 or fermentando == True):
                         if despreciacion<despreciacion_1000[i[0]][cuartel.variedad]:
                             despreciacion_1000[i[0]][cuartel.variedad]=despreciacion
                     elif cuartel.precio == 3000:
-                        cantidad_3000[i[0]][cuartel.variedad] += i[1]
+                        cantidad_3000[i[0]][cuartel.variedad] += round(i[1],3)
                         despreciacion=cuartel.gen_desp(dia_actual,3000)
                         resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                         if despreciacion<despreciacion_3000[i[0]][cuartel.variedad]:
                             despreciacion_3000[i[0]][cuartel.variedad]=despreciacion
                     elif cuartel.precio == 6000:
-                        cantidad_6000[i[0]][cuartel.variedad] += i[1]
+                        cantidad_6000[i[0]][cuartel.variedad] += round(i[1],3)
                         despreciacion=cuartel.gen_desp(dia_actual,6000)
                         resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                         if despreciacion<despreciacion_6000[i[0]][cuartel.variedad]:
@@ -299,7 +303,10 @@ while (dia_actual <= 79 or fermentando == True):
 
 #Se imprime el resumen de todo lo fermentado y sobrasa
 #resumen.imprimir_resumen()
-#RESUMENES.append(resumen)
+for i in Los_Cuarteles:
+    C=i.cosechable*i.precio*10*1000
+    resumen.costo_sobras+=C
+RESUMENES.append(resumen)
 fin = time.time()
 print(fin-inicio) # 1.0005340576171875
 # ------------------------------------------------------------
@@ -309,7 +316,7 @@ print(fin-inicio) # 1.0005340576171875
 
 # %%
 
-crear_excel("solucion_21d_impl0.01t",RESUMENES)
+crear_excel("solucion_21d_impl0.005t2",RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 

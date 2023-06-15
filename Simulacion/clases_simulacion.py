@@ -101,10 +101,13 @@ class Tanque:
         self.capacidad=capacidad
         self.estado="Disponible"
         self.dia_inicial=0
+        self.dia_promedio=0
         self.dia_termino=0
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         self.precio=0
+        self.promedio_fermentacion = {'C': 15, 'CF': 16, 'CS': 14, 'G': 18, 'M': 17, 'S': 14, 'V': 17, 'SB': 16, 'Ch': 16}
+
         self.ubicacion=ubicacion
         self.generado=0
         pass
@@ -115,6 +118,7 @@ class Tanque:
             self.dia_inicial=dia
             self.cantidad_fermentado=cantidad
             self.variedad_fermentando=variedad
+            self.dia_promedio=self.promedio_fermentacion[variedad]
             self.precio=precio
             self.dia_termino=dia+self.generar_dia(variedad,distr)
             #print("Se comienza a fermentar {} de variedad {} hasta el día {} en la bodega {}".format(cantidad,variedad,self.dia_termino,self.ubicacion))
@@ -278,7 +282,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
         G=i.gen_promedio()
         ws['A'+str(c)] = G[6][1]
         ws['B'+str(c)] = G[4][1]
-        ws['C'+str(c)] = 3041.59 - G[4][1]
+        ws['C'+str(c)] = i.total_cosechable-i.cosechado
         ws['D'+str(c)] = G[5][1]
         ws['E'+str(c)] = G[7][1]
         ws['F'+str(c)] = G[3][1]
@@ -483,14 +487,14 @@ def pasar_tanques_dict(BODEGAS,dia):
             nombre=nombre.lower()
             tanques_ocupados[nombre]={}
             diat=a.dia_termino
-            for i in range(dia,min(dia+3,79)):
+            for i in range(dia,min(a.dia_inicial+a.dia_promedio,79)):
                 tanques_ocupados[nombre]["dia_"+str(i)]=1            
     return tanques_ocupados
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
         nombre="cuartel_"+str(i.id)[:-2]
-        cosechar[nombre]=max(round(i.cosechable/i.factor),4)
+        cosechar[nombre]=max(round(i.cosechable/i.factor,3),0)
     return cosechar
 
 
