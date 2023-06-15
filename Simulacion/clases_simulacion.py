@@ -158,7 +158,7 @@ class Resumen:
         self.seed=0
         self.sobras_cantidad_dia=[]
         self.porcentaje_tanque=[]
-        self.total_cosechable=3041.59
+        self.total_cosechable=0
         self.dias_ocupado_tanques=[]
         self.fermentado_1000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
         self.fermentado_3000 = {'Machali':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Chepica':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}, 'Nancagua':{'G':0, 'Ch':0, 'SB':0, 'C':0, 'CS':0, 'S':0, 'M':0, 'CF':0, 'V':0}}
@@ -178,7 +178,9 @@ class Resumen:
     def agregar_dia(self,dia):
         self.dias[dia]=[]
         pass
-    
+    def agregar_cosechaT(self,cuarteles):
+        for i in cuarteles:
+            self.total_cosechable+=i.cosechable
     def agregar_cosecha(self,dia,cosecha):
         self.dias[dia].append("Se cosecho "+cosecha)
         pass
@@ -435,7 +437,7 @@ def comb_liquido(tanques, liquido):
 def pasar_tanques_a_diario(tanques_ocupados):
     diccionario_datos_estanques = tanques_ocupados.to_dict(orient='records')
     dic_tanques_dia={}
-    for i in range(1,100):
+    for i in range(1,150):
         di="dia_"+str(i)
         dic_tanques_dia[di]=[]
     for i in diccionario_datos_estanques:
@@ -445,10 +447,10 @@ def pasar_tanques_a_diario(tanques_ocupados):
             dic_tanques_dia[i["Dia"]]=[i]
     return dic_tanques_dia
 
-def revisar_input(tanques_ocupados,bodegas,dia):
+def revisar_input(tanques_a_ocupar,tanques_ocupados,bodegas,dia):
     tanques_problemas=[]
     di="dia_"+str(dia)
-    tanque_a_usar=tanques_ocupados[di]
+    tanque_a_usar=tanques_a_ocupar[di]
     for b in tanque_a_usar:
         id=int(b["Estanque"].split("_")[2])
         ub=b["Bodega"]
@@ -457,9 +459,15 @@ def revisar_input(tanques_ocupados,bodegas,dia):
                 for a in i.tanques_fermentando:
                     if a.id==id:
                         tanques_problemas.append([a,"tanque ocupado"])
-                for a in i.tanques_disponibles:
-                    if a.id==id:
-                        tanques_problemas.append([a,"tanque disponible"])
+    for b in tanques_ocupados:
+        id=int(b.split("_")[2])
+        ub=b.split("_")[1]
+        if di in tanques_ocupados[b]:
+            for i in bodegas:
+                if i.ubicacion==ub:
+                    for a in i.tanques_disponibles:
+                        if a.id==id:
+                            tanques_problemas.append([a,"tanque disponible"])
     return tanques_problemas
 
      
@@ -475,14 +483,14 @@ def pasar_tanques_dict(BODEGAS,dia):
             nombre=nombre.lower()
             tanques_ocupados[nombre]={}
             diat=a.dia_termino
-            for i in range(dia,min(a.dia_termino+1,79)):
+            for i in range(dia,min(dia+3,79)):
                 tanques_ocupados[nombre]["dia_"+str(i)]=1            
     return tanques_ocupados
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
         nombre="cuartel_"+str(i.id)[:-2]
-        cosechar[nombre]=max(round(i.cosechable/i.factor),0)
+        cosechar[nombre]=max(round(i.cosechable/i.factor),4)
     return cosechar
 
 
@@ -522,13 +530,15 @@ def crear_clases():
     RESUMENES=[]
     return Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES
 
-def leer_gurobi(Los_Cuarteles,cosecha):
+def leer_gurobi(Los_Cuarteles,cosecha,trabajadores):
     diccionario_datos_cosecha = cosecha.to_dict(orient='records')
+    diccionario_datos_trabajadores = trabajadores.to_dict(orient='records')
     for elemento in diccionario_datos_cosecha:
         for cuartel in Los_Cuarteles:
             C='cuartel_'+str(cuartel.id).split('.')[0]
             if C == elemento['Cuartel']:
-                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],round(elemento['Valor'],2)])
+                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],round(elemento['Valor'],4)])
+    return diccionario_datos_trabajadores
 
 def tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad):
     tanques_a_usar=[]

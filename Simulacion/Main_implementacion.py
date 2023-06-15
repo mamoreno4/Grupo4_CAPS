@@ -17,7 +17,7 @@ time.sleep(1)
 
 # ------------------------------------------------------------
 #inicializar variables
-dia_actual = 12
+dia_actual = 1
 largo_periodo = 21
 #Crear resumen
 resumen = Resumen()
@@ -31,12 +31,18 @@ binom.random_state=numpy_randomGen
 # ------------------------------------------------------------
 #Poblar clases
 Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES=crear_clases()
-
-
-
+resumen.agregar_cosechaT(Los_Cuarteles)
+for i in Los_Cuarteles:
+    print(i)
+    print(i.cosechable)
+trab=[]
+contador=1
+diferencia=False
+fermentando=False
+# %%
 
 #Iterar dias
-while (dia_actual <= 99):
+while (dia_actual <= 79 or fermentando == True):
 
     #Cantidad de cosecha por bodega y cepa
     #dictionary = {'key':value}
@@ -64,20 +70,32 @@ while (dia_actual <= 99):
                 pass
         # ------------------------------------------------------------
     #Revisar si los tanques correspondientes esta disponibles
-    if (dia_actual <= 1):
-        estanques_ocupados=pasar_tanques_dict(Las_Bodegas,dia_actual)
-        total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
-        for a in Los_Cuarteles:
-            for i in range(1,100):
-                a.cosecha_por_dia[i]=[]
-        cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.001)
-        dict_diario=pasar_tanques_a_diario(estanques)
-        leer_gurobi(Los_Cuarteles,cosecha)    
+    if (dia_actual != 1):
+        revisado=revisar_input(dict_diario,estanques_ocupados,Las_Bodegas,dia_actual)
+        if len(revisado)>=1:
+            diferencia=True
+        else:
+            contador+=1
+    if (dia_actual <= 1 or diferencia==True or contador>=10):
+        if (dia_actual <= 79):
+            print("Hora de optimizar")
+
+            estanques_ocupados=pasar_tanques_dict(Las_Bodegas,dia_actual)
+            total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
+            for a in Los_Cuarteles:
+                for i in range(1,100):
+                    a.cosecha_por_dia[i]=[]
+            cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, 0.01)
+            dict_diario=pasar_tanques_a_diario(estanques)
+            trab=leer_gurobi(Los_Cuarteles,cosecha,trabajadores)
+            diferencia=False
+            contador=1
+    for i in trab:
+        if i["Dia"]=="dia_"+str(dia_actual):
+            resumen.costo_trabajo+=i["Valor"]
         
-    revisado=revisar_input(dict_diario,Las_Bodegas,dia_actual)
-    for i in revisado:
-        if i[1]=="tanque ocupado":
-            print("El tanque "+str(i[0])+" esta ocupado")
+
+
 
     #crear diccionarios de despreciacion de la uva, segun dia cosechado
     despreciacion_1000 = {'Machali':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Chepica':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}, 'Nancagua':{'G':1, 'Ch':1, 'SB':1, 'C':1, 'CS':1, 'S':1, 'M':1, 'CF':1, 'V':1}}
@@ -86,33 +104,37 @@ while (dia_actual <= 99):
     #Revisar cosecha diaria por cuartel y precio
     for cuartel in Los_Cuarteles:
             #si la cantidad de cosecha del dia por cuartel es mayor a 0 continuar
-            print(cuartel.cosecha_por_dia[dia_actual])
+            #print(cuartel.cosecha_por_dia[dia_actual])
             if len(cuartel.cosecha_por_dia[dia_actual]) > 0:
                 for i in cuartel.cosecha_por_dia[dia_actual]:
                     #agregar cosecha al resumen
                     if i[1] > 1:
                         resumen.cosechado +=i[1]
-                        cuartel.cosechable -= round(i[1],2)
+                        print(cuartel)
+                        print(cuartel.cosechable)
+                        cuartel.cosechable -= i[1]
+                        print(i[1])
+                        print(cuartel.cosechable)
                     #agregar cosecha por precio al diccionario con las bodegas y cepas del dia
                     if cuartel.precio == 1000:
                         cantidad_1000[i[0]][cuartel.variedad] += i[1]
                         #revisar despreciacion de la uva
                         despreciacion=cuartel.gen_desp(dia_actual,1000)
                         #agregar costo de transporte al resumen
-                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
+                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                         #si la despreciacion es menor a la despreciacion actual, reemplazar
                         if despreciacion<despreciacion_1000[i[0]][cuartel.variedad]:
                             despreciacion_1000[i[0]][cuartel.variedad]=despreciacion
                     elif cuartel.precio == 3000:
                         cantidad_3000[i[0]][cuartel.variedad] += i[1]
                         despreciacion=cuartel.gen_desp(dia_actual,3000)
-                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
+                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                         if despreciacion<despreciacion_3000[i[0]][cuartel.variedad]:
                             despreciacion_3000[i[0]][cuartel.variedad]=despreciacion
                     elif cuartel.precio == 6000:
                         cantidad_6000[i[0]][cuartel.variedad] += i[1]
                         despreciacion=cuartel.gen_desp(dia_actual,6000)
-                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]
+                        resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                         if despreciacion<despreciacion_6000[i[0]][cuartel.variedad]:
                             despreciacion_6000[i[0]][cuartel.variedad]=despreciacion
                     else:
@@ -140,7 +162,7 @@ while (dia_actual <= 99):
                 result=comb_liquido(tanks, cantidad)
                 print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
                 print(result)
-                print(tanques_a_usar)
+                #print(tanques_a_usar)
                 if result:
                         print("Combina tanques encontrada V1")
                         #iterar por tanques y cantidad de uva
@@ -168,7 +190,7 @@ while (dia_actual <= 99):
                 result=comb_liquido(tanks, cantidad)
                 print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
                 print(result)
-                print(tanques_a_usar)
+                #print(tanques_a_usar)
                 if result:
                         print("Combina tanques encontrada V1")
                         #iterar por tanques y cantidad de uva
@@ -197,7 +219,7 @@ while (dia_actual <= 99):
                 print(cantidad)
                 print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
                 print(result)
-                print(tanques_a_usar)
+                #print(tanques_a_usar)
                 if result:
                         print("Combina tanques encontrada V1")
                         #iterar por tanques y cantidad de uva
@@ -266,13 +288,18 @@ while (dia_actual <= 99):
 
     #restablecer cosecha del dia
     dia_actual +=1
-
-
     dia_inicio=dia_actual
+    fermentando=False
+    for i in Las_Bodegas:
+        t=i.tanques_fermentando
+        if len(t)>=1:
+            fermentando=True
+    
+
 
 #Se imprime el resumen de todo lo fermentado y sobrasa
 #resumen.imprimir_resumen()
-RESUMENES.append(resumen)
+#RESUMENES.append(resumen)
 fin = time.time()
 print(fin-inicio) # 1.0005340576171875
 # ------------------------------------------------------------
@@ -282,7 +309,7 @@ print(fin-inicio) # 1.0005340576171875
 
 # %%
 
-crear_excel("solucion_21d_impl0.001",RESUMENES)
+crear_excel("solucion_21d_impl0.01t",RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 
