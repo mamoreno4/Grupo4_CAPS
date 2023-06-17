@@ -40,10 +40,11 @@ contador=1
 diferencia=False
 fermentando=False
 # %%
+Cosecha_dia_ex=[]
+fermentado_dia_ex=[]
 
 #Iterar dias
 while (dia_actual <= 79 or fermentando == True):
-
     #Cantidad de cosecha por bodega y cepa
     #dictionary = {'key':value}
     cantidad_1000 = {'Machali':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Chepica':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}, 'Nancagua':{'CS':0, 'S':0, 'C':0, 'G':0, 'CF':0, 'M':0, 'SB':0, 'Ch':0, 'V':0}}
@@ -110,6 +111,7 @@ while (dia_actual <= 79 or fermentando == True):
                 for i in cuartel.cosecha_por_dia[dia_actual]:
                     #agregar cosecha al resumen
                     if i[1] > 1:
+                        Cosecha_dia_ex=["Dia"+str(dia_actual),"Cuartel"+str(cuartel),"Cosechado"+str(i[1])]
                         resumen.cosechado +=i[1]
                         print(cuartel)
                         print(cuartel.cosechable)
