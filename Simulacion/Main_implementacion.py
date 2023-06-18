@@ -1,4 +1,3 @@
-
 from random import uniform, seed, randint, gauss
 from numpy.random import Generator, PCG64
 import numpy as np
@@ -345,7 +344,7 @@ print(fin-inicio) # 1.0005340576171875
 # ------------------------------------------------------------
 #CREAR EXCEL
 nomb="solucion_"+str(largo_periodo)+"d_gap"+str(gap)
-crear_excel(nomb,RESUMENES)
+crear_excel(nomb,RESUMENES,fin-inicio)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 

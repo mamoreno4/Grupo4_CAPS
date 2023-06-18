@@ -263,7 +263,7 @@ class Resumen:
         print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
 
-def crear_excel(nombre_archivo,lista_resumenes):
+def crear_excel(nombre_archivo,lista_resumenes,tiempo):
 
     now = datetime.now()
     current_time = now.strftime("%H,%M,%S")
@@ -300,6 +300,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
     ws['M1'] = "Costos Trabajadores"
     ws['N1'] = "Ganancias"
     ws['O1'] = "Ganancias Bruta"
+    ws['P1'] = "Tiempo se simulacion"
     c=2
     for i in lista_resumenes:
         G=i.gen_promedio()
@@ -318,6 +319,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
         ws['L'+str(c)] = G[11][1]
         ws['M'+str(c)] = G[12][1]
         ws['O'+str(c)] = G[13][1]
+        ws['P'+str(c)] = tiempo
 
 
         c+=1
@@ -446,7 +448,7 @@ def llenar_tanques(liquido_total, tanques):
         for i in T:
             liquido_min+=0.75*i[1]
         tankL=min(max_liquido,liquido_total-liquido_min)
-        
+
         cantidad_liquido = min(liquido_total, tankL)
         
         liquido_tanques.append((nombre_tanque, cantidad_liquido))
