@@ -12,7 +12,7 @@ inicio = time.time()
 #Nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
 #Código a medir
 time.sleep(1)
-u=2123654
+escenario=2123654
 # ------------------------------------------------------------
 Cantidad_simulaciones=0
 RESUMENES=[]
@@ -28,8 +28,8 @@ while Cantidad_simulaciones<1:
     resumen = Resumen()
     resumen.costo_trabajo = 0
     #setear escenario
-    u+=1
-    seed=u
+    escenario+=1
+    seed=escenario
     resumen.seed = seed
     scipy_randomGen = binom
     numpy_randomGen = Generator(PCG64(seed))
