@@ -5,6 +5,10 @@ import pandas as pd
 from scipy.stats import binom
 import openpyxl
 import itertools
+import os
+from datetime import datetime
+
+
 #archivo con las clases y funciones del main
 class Cuartel:
 
@@ -175,6 +179,8 @@ class Resumen:
         self.costo_dias=0
         self.costo_sobras=0
         self.ganancias=0
+        self.dict_dia=[]
+        self.largo=0
         for i in range(200):
             self.dias[i]=[]
         pass
@@ -258,11 +264,28 @@ class Resumen:
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
 
 def crear_excel(nombre_archivo,lista_resumenes):
-    nombre=nombre_archivo+".xlsx"
+
+    now = datetime.now()
+    current_time = now.strftime("%H,%M,%S")
+    path = './soluciones_implementacion/'+nombre_archivo+"_"+current_time
+    os.makedirs(path)
+    os.chdir(path)
+    for i in lista_resumenes:
+        df_cosecha = pd.DataFrame({'Dia': i.dict_dia[0][0], 'Cuartel': i.dict_dia[0][1], 'cosecha': i.dict_dia[0][2]})
+        df_trabajadores = pd.DataFrame({'Dia': i.dict_dia[1][0], 'Cuartel': i.dict_dia[1][1], 'Valor': i.dict_dia[1][2]})
+        df_fermentado = pd.DataFrame({'Dia': i.dict_dia[2][0], 'Cepa': i.dict_dia[2][1], 'Calidad': i.dict_dia[2][2], 'Result': i.dict_dia[2][3]})
+    open("cosecha.csv","w")
+    df_cosecha.to_csv("cosecha.csv", index=False, mode="a")
+
+    open("trabajadores.csv","w")
+    df_trabajadores.to_csv("trabajadores.csv", index=False, mode="a")
+    open("fermentado.csv","w")
+    df_fermentado.to_csv("fermentado.csv", index=False, mode="a")
+    nombre=nombre_archivo+current_time+".xlsx"
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Resumen"
-    ws['A1'] = "Nombre(seed)"
+    ws['A1'] = "Nombre(seed)-largo periodo"
     ws['B1'] = "Cosechado"
     ws['C1'] = "No cosechado"
     ws['D1'] = "Fermentado"
@@ -280,7 +303,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
     c=2
     for i in lista_resumenes:
         G=i.gen_promedio()
-        ws['A'+str(c)] = G[6][1]
+        ws['A'+str(c)] = str(G[6][1])+"-"+str(i.largo)
         ws['B'+str(c)] = G[4][1]
         ws['C'+str(c)] = i.total_cosechable-i.cosechado
         ws['D'+str(c)] = G[5][1]
@@ -299,6 +322,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
 
         c+=1
     wb.save(nombre)
+    wb.close()
 # funcion para llenar los tanques version 1
 def fill_tanks(tanks, liquid):
     # iniciar variables
@@ -451,10 +475,10 @@ def pasar_tanques_a_diario(tanques_ocupados):
             dic_tanques_dia[i["Dia"]]=[i]
     return dic_tanques_dia
 
-def revisar_input(tanques_a_ocupar,tanques_ocupados,bodegas,dia):
+def revisar_input(dia_dict,tanques_ocupados,bodegas,dia):
     tanques_problemas=[]
     di="dia_"+str(dia)
-    tanque_a_usar=tanques_a_ocupar[di]
+    tanque_a_usar=dia_dict[di]
     for b in tanque_a_usar:
         id=int(b["Estanque"].split("_")[2])
         ub=b["Bodega"]
@@ -466,6 +490,7 @@ def revisar_input(tanques_a_ocupar,tanques_ocupados,bodegas,dia):
     for b in tanques_ocupados:
         id=int(b.split("_")[2])
         ub=b.split("_")[1]
+        ub=ub.capitalize()
         if di in tanques_ocupados[b]:
             for i in bodegas:
                 if i.ubicacion==ub:
@@ -478,18 +503,22 @@ def revisar_input(tanques_a_ocupar,tanques_ocupados,bodegas,dia):
 
 def pasar_tanques_dict(BODEGAS,dia):
     tanques_ocupados={}
+    tanques_realidad={}
     for i in BODEGAS:
         bod=i.ubicacion
         for a in i.tanques_fermentando:
-            
             id=str(a.id)
             nombre="estanque_"+bod+"_"+id
             nombre=nombre.lower()
             tanques_ocupados[nombre]={}
+            tanques_realidad[nombre]={}
             diat=a.dia_termino
-            for i in range(dia,min(a.dia_inicial+a.dia_promedio,79)):
-                tanques_ocupados[nombre]["dia_"+str(i)]=1            
-    return tanques_ocupados
+            for i in range(dia,min(max(a.dia_inicial+a.dia_promedio,dia+1),79)):
+                tanques_ocupados[nombre]["dia_"+str(i)]=1
+            for i in range(dia,a.dia_termino):
+                tanques_realidad[nombre]["dia_"+str(i)]=1
+                
+    return tanques_ocupados,tanques_realidad
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
@@ -531,8 +560,7 @@ def crear_clases():
     b=Bodega(Bodegas,"Nancagua")
     Las_Bodegas.append(b)
     #lsita con el resumen de cada iteracon
-    RESUMENES=[]
-    return Distribuciones,Los_Cuarteles,Las_Bodegas,RESUMENES
+    return Distribuciones,Los_Cuarteles,Las_Bodegas
 
 def leer_gurobi(Los_Cuarteles,cosecha,trabajadores):
     diccionario_datos_cosecha = cosecha.to_dict(orient='records')
