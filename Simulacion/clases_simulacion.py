@@ -429,16 +429,25 @@ def llenar_tanques(liquido_total, tanques):
     
     # Inicializar una lista para almacenar la cantidad de líquido en cada tanque
     liquido_tanques = []
+    tanques_usados = []
     
     # Recorrer los tanques ordenados
     for i, tanque in enumerate(tanques_ordenados):
         nombre_tanque, capacidad_tanque = tanque
-        
+        tanques_usados.append(tanque)
         # Calcular la cantidad de líquido a poner en el tanque actual
         min_liquido = float(0.75 * capacidad_tanque)  # 75% de la capacidad del tanque
         max_liquido = float(0.95 * capacidad_tanque)  # 95% de la capacidad del tanque
+        T=tanques_ordenados.copy()
+        liquido_min=0
+        for i in tanques_usados:
+            if i in T:
+                T.remove(i)
+        for i in T:
+            liquido_min+=0.75*i[1]
+        tankL=min(max_liquido,liquido_total-liquido_min)
         
-        cantidad_liquido = min(liquido_total, max_liquido)
+        cantidad_liquido = min(liquido_total, tankL)
         
         liquido_tanques.append((nombre_tanque, cantidad_liquido))
         liquido_total -= cantidad_liquido

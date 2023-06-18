@@ -344,12 +344,13 @@ capacidad_minima = {'Nancagua': min(nancagua['capacidad tanques (miles de litros
 estanques_ocupados = {}
 
 # %%
-def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, total_cosechar_actual, gap):
+def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, total_cosechar_actual, gap,time_limit):
     dia_inicio: int
     largo_periodo: int
     estanques_ocupados_actual: dict
     total_cosechar_actual: dict
     gap: float
+    time_limit: int
     if largo_periodo+dia_inicio > datos1['Dia_final'].max():
         largo_periodo=datos1['Dia_final'].max()-dia_inicio
         
@@ -359,6 +360,8 @@ def optimizacion_cosecha(dia_inicio, largo_periodo, estanques_ocupados_actual, t
 
     model = Model("Cosecha Vino")
     model.setParam('MIPGap', gap)
+    #Limite de tiempo, en segundos, para la ejecución del modelo. Si se supera, se entrega la mejor solución encontrada hasta el momento.
+    model.setParam('TimeLimit', time_limit)
 
     # Lista que agrupa los días en intervalos de X cantidad de días.
     agrupacion = {}

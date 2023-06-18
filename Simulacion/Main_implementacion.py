@@ -21,8 +21,9 @@ while Cantidad_simulaciones<1:
     print("Simulacion " + str(Cantidad_simulaciones))
     #inicializar variables
     dia_actual = 1
-    largo_periodo = 15
+    largo_periodo = 17
     gap = 0.01
+    time_limit = 600
     #Crear resumen
     resumen=0
     resumen = Resumen()
@@ -93,7 +94,7 @@ while Cantidad_simulaciones<1:
                     for i in range(1,100):
                         a.cosecha_por_dia[i]=[]
                 print(total_cosechar)
-                cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, gap)
+                cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, gap,time_limit)
                 dict_diario=pasar_tanques_a_diario(estanques)
                 trab=leer_gurobi(Los_Cuarteles,cosecha,trabajadores)
                 diferencia=False
