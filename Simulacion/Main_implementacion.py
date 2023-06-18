@@ -18,11 +18,10 @@ Cantidad_simulaciones=0
 RESUMENES=[]
 while Cantidad_simulaciones<1:
     Cantidad_simulaciones+=1
-
     print("Simulacion " + str(Cantidad_simulaciones))
     #inicializar variables
     dia_actual = 1
-    largo_periodo = 17
+    largo_periodo = 15
     gap = 0.01
     #Crear resumen
     resumen=0
@@ -39,7 +38,7 @@ while Cantidad_simulaciones<1:
     #Poblar clases
     Distribuciones,Los_Cuarteles,Las_Bodegas=crear_clases()
     resumen.agregar_cosechaT(Los_Cuarteles)
-    estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual)
+    estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual,largo_periodo)
     total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
     trab=[]
     contador=1
@@ -88,7 +87,7 @@ while Cantidad_simulaciones<1:
         if (dia_actual <= 1 or diferencia==True or contador>=10):
             if (dia_actual <= 79):
                 print("Hora de optimizar")
-                estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual)
+                estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual,largo_periodo)
                 total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
                 for a in Los_Cuarteles:
                     for i in range(1,100):

@@ -501,7 +501,7 @@ def revisar_input(dia_dict,tanques_ocupados,bodegas,dia):
 
      
 
-def pasar_tanques_dict(BODEGAS,dia):
+def pasar_tanques_dict(BODEGAS,dia,largo):
     tanques_ocupados={}
     tanques_realidad={}
     for i in BODEGAS:
@@ -513,7 +513,7 @@ def pasar_tanques_dict(BODEGAS,dia):
             tanques_ocupados[nombre]={}
             tanques_realidad[nombre]={}
             diat=a.dia_termino
-            for i in range(dia,min(max(a.dia_inicial+a.dia_promedio,dia+1),79)):
+            for i in range(dia,min(min(max(a.dia_inicial+a.dia_promedio,dia+1),79),dia+largo)):
                 tanques_ocupados[nombre]["dia_"+str(i)]=1
             for i in range(dia,a.dia_termino):
                 tanques_realidad[nombre]["dia_"+str(i)]=1
