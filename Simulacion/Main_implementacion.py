@@ -14,12 +14,12 @@ inicio = time.time()
 time.sleep(1)
 u=2123654
 # ------------------------------------------------------------
-cccc=0
+Cantidad_simulaciones=0
 RESUMENES=[]
-while cccc<1:
-    cccc+=1
+while Cantidad_simulaciones<1:
+    Cantidad_simulaciones+=1
 
-    print("Simulacion " + str(cccc))
+    print("Simulacion " + str(Cantidad_simulaciones))
     #inicializar variables
     dia_actual = 1
     largo_periodo = 17
