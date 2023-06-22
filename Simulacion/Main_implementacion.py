@@ -11,7 +11,7 @@ inicio = time.time()
 #Nesecita cargar los datos de las distribuciones, los cuarteles, las bodegas y los trabajadores
 #Código a medir
 time.sleep(1)
-escenario=2123654
+escenario=2123660
 # ------------------------------------------------------------
 Cantidad_simulaciones=0
 RESUMENES=[]
@@ -20,7 +20,7 @@ while Cantidad_simulaciones<1:
     print("Simulacion " + str(Cantidad_simulaciones))
     #inicializar variables
     dia_actual = 1
-    largo_periodo = 17
+    largo_periodo = 15
     gap = 0.01
     time_limit = 600
     #Crear resumen
@@ -77,10 +77,14 @@ while Cantidad_simulaciones<1:
         #Revisar si los tanques correspondientes esta disponibles
         if (dia_actual != 1):
             print("Revisar si los tanques correspondientes esta disponibles")
+            if contador>=10:
+                estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual,largo_periodo)
             revisado=revisar_input(dict_diario,estanques_ocupados,Las_Bodegas,dia_actual)
             if len(revisado)>=1:
                 print("DIFERENCIA")
                 print(revisado)
+                print(estanques_ocupados)
+                print(tanques_relidad)
                 diferencia=True
             else:
                 contador+=1
@@ -93,8 +97,10 @@ while Cantidad_simulaciones<1:
                     for i in range(1,100):
                         a.cosecha_por_dia[i]=[]
                 print(total_cosechar)
+
                 cosecha, trabajadores, estanques = optimizacion_cosecha(dia_actual,largo_periodo,estanques_ocupados, total_cosechar, gap,time_limit)
                 dict_diario=pasar_tanques_a_diario(estanques)
+                estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual,largo_periodo)
                 trab=leer_gurobi(Los_Cuarteles,cosecha,trabajadores)
                 diferencia=False
                 contador=1
@@ -134,7 +140,7 @@ while Cantidad_simulaciones<1:
                                 print("Cuartel " + str(cuartel)+" cosechado")
                         #agregar cosecha por precio al diccionario con las bodegas y cepas del dia
                         if cuartel.precio == 1000:
-                            cantidad_1000[i[0]][cuartel.variedad] += round(i[1],3)
+                            cantidad_1000[i[0]][cuartel.variedad] += round(i[1],2)
                             #revisar despreciacion de la uva
                             despreciacion=cuartel.gen_desp(dia_actual,1000)
                             #agregar costo de transporte al resumen
@@ -143,13 +149,13 @@ while Cantidad_simulaciones<1:
                             if despreciacion<despreciacion_1000[i[0]][cuartel.variedad]:
                                 despreciacion_1000[i[0]][cuartel.variedad]=despreciacion
                         elif cuartel.precio == 3000:
-                            cantidad_3000[i[0]][cuartel.variedad] += round(i[1],3)
+                            cantidad_3000[i[0]][cuartel.variedad] += round(i[1],2)
                             despreciacion=cuartel.gen_desp(dia_actual,3000)
                             resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                             if despreciacion<despreciacion_3000[i[0]][cuartel.variedad]:
                                 despreciacion_3000[i[0]][cuartel.variedad]=despreciacion
                         elif cuartel.precio == 6000:
-                            cantidad_6000[i[0]][cuartel.variedad] += round(i[1],3)
+                            cantidad_6000[i[0]][cuartel.variedad] += round(i[1],2)
                             despreciacion=cuartel.gen_desp(dia_actual,6000)
                             resumen.costo_transporte += cuartel.transporte[i[0]]*i[1]*1000
                             if despreciacion<despreciacion_6000[i[0]][cuartel.variedad]:
@@ -199,6 +205,11 @@ while Cantidad_simulaciones<1:
                             resumen.ganancias+=fill_amount*1000*6000*despreciacion_6000[Nbodega][Ncepa]
                             print(Td,fill_amount)
                             print(cantidad_6000[Nbodega][Ncepa])
+                    else:
+                        print("ERROR: No se pudo combinar tanques")
+                        print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                        print(tanques_a_usar)
+                        print("RESULT")
             for Ncepa in cantidad_3000[Nbodega]:
                 calidad=3000
                 cantidad=cantidad_3000[Nbodega][Ncepa]
@@ -232,6 +243,11 @@ while Cantidad_simulaciones<1:
                             resumen.ganancias+=fill_amount*1000*3000*despreciacion_3000[Nbodega][Ncepa]
                             print(Td,fill_amount)
                             print(cantidad_3000[Nbodega][Ncepa])
+                    else:
+                        print("ERROR: No se pudo combinar tanques")
+                        print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                        print(tanques_a_usar)
+                        print("RESULT")
             for Ncepa in cantidad_1000[Nbodega]:
                 calidad=1000
                 cantidad=cantidad_1000[Nbodega][Ncepa]
@@ -266,6 +282,11 @@ while Cantidad_simulaciones<1:
                             resumen.ganancias+=fill_amount*1000*1000*despreciacion_1000[Nbodega][Ncepa]
                             print(Td,fill_amount)
                             print(cantidad_1000[Nbodega][Ncepa])
+                    else:
+                        print("ERROR: No se pudo combinar tanques")
+                        print("TANQUES A USAR dia "+str(dia_actual)+" bodega "+str(Nbodega)+" cepa "+str(Ncepa)+" calidad "+str(calidad) )
+                        print(tanques_a_usar)
+                        print("RESULT")
 
 
         #Contar sobras del dia                    

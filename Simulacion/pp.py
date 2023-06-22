@@ -280,11 +280,15 @@ nro_estanques = {'Machali': 14, 'Chepica': 9, 'Nancagua': 13}
 
 # %%
 ##  Diccionario con los promedios de tiempos de fermentación de cada cepa.
-#
-promedio_fermentacion = {'C': 15, 'CF': 16, 'CS': 14, 'G': 18, 'M': 17, 'S': 14, 'V': 17, 'SB': 16, 'Ch': 16}
+#robusto
+#promedio_fermentacion = {'C': 15, 'CF': 16, 'CS': 14, 'G': 18, 'M': 17, 'S': 14, 'V': 17, 'SB': 16, 'Ch': 16}
 #
 ## Lista que agrupa los días en intervalos de X cantidad de días.
 #
+#max
+#promedio_fermentacion = {'C': 17, 'CF': 19, 'CS': 16, 'G': 17, 'M': 24, 'S': 15, 'V': 19, 'SB': 17, 'Ch': 17}
+#promedio
+promedio_fermentacion = {'C': 12, 'CF': 13, 'CS': 12, 'G': 12, 'M': 13, 'S': 12, 'V': 13, 'SB': 13, 'Ch': 13}
 #agrupacion = {}
 #
 #for c in cepas:

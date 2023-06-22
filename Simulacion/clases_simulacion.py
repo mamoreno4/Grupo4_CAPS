@@ -414,7 +414,7 @@ def encontrar_combinacion_liquido(liquido, tanques):
             # Calcular la suma de las capacidades de los tanques en la combinación
             suma_capacidades = sum(capacidad for _, capacidad in combo)
             # Verificar si la combinación es válida
-            if liquido >= suma_capacidades * 0.75 and liquido <= suma_capacidades * 0.95:
+            if liquido >= suma_capacidades * 0.74 and liquido <= suma_capacidades * 0.96:
                 # Calcular la diferencia entre la suma de las capacidades y el líquido
                 diferencia = abs(suma_capacidades - liquido)
                 # Verificar si la diferencia es menor a la diferencia mínima
@@ -534,7 +534,7 @@ def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
         nombre="cuartel_"+str(i.id)[:-2]
-        cosechar[nombre]=max(round(i.cosechable/i.factor,3),0)
+        cosechar[nombre]=max(round(i.cosechable/i.factor,2),0)
     return cosechar
 
 
@@ -580,7 +580,7 @@ def leer_gurobi(Los_Cuarteles,cosecha,trabajadores):
         for cuartel in Los_Cuarteles:
             C='cuartel_'+str(cuartel.id).split('.')[0]
             if C == elemento['Cuartel']:
-                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],round(elemento['Valor'],4)])
+                cuartel.agregar_cosecha(int(elemento['Dia'].split("_")[1]), [elemento["Bodega"],round(elemento['Valor'],2)])
     return diccionario_datos_trabajadores
 
 def tanques_dia(dia,Nbodega,Ncepa,dict_diario,calidad):
