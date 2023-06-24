@@ -110,7 +110,7 @@ class Tanque:
         self.cantidad_fermentado=0
         self.variedad_fermentando=""
         self.precio=0
-        self.promedio_fermentacion = {'C': 15, 'CF': 16, 'CS': 14, 'G': 18, 'M': 17, 'S': 14, 'V': 17, 'SB': 16, 'Ch': 16}
+        self.promedio_fermentacion = {'C': 12, 'CF': 13, 'CS': 12, 'G': 12, 'M': 13, 'S': 12, 'V': 13, 'SB': 13, 'Ch': 13}
 
         self.ubicacion=ubicacion
         self.generado=0
@@ -181,6 +181,8 @@ class Resumen:
         self.ganancias=0
         self.dict_dia=[]
         self.largo=0
+        self.time=0
+        self.simulacion=0
         for i in range(200):
             self.dias[i]=[]
         pass
@@ -263,7 +265,7 @@ class Resumen:
         print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
 
-def crear_excel(nombre_archivo,lista_resumenes,tiempo):
+def crear_excel(nombre_archivo,lista_resumenes):
 
     now = datetime.now()
     current_time = now.strftime("%H,%M,%S")
@@ -301,6 +303,7 @@ def crear_excel(nombre_archivo,lista_resumenes,tiempo):
     ws['N1'] = "Ganancias"
     ws['O1'] = "Ganancias Bruta"
     ws['P1'] = "Tiempo se simulacion"
+    ws['Q1'] = "Cantidad gurobi"
     c=2
     for i in lista_resumenes:
         G=i.gen_promedio()
@@ -319,7 +322,8 @@ def crear_excel(nombre_archivo,lista_resumenes,tiempo):
         ws['L'+str(c)] = G[11][1]
         ws['M'+str(c)] = G[12][1]
         ws['O'+str(c)] = G[13][1]
-        ws['P'+str(c)] = tiempo
+        ws['P'+str(c)] = i.time
+        ws['Q'+str(c)] = i.sim
 
 
         c+=1
