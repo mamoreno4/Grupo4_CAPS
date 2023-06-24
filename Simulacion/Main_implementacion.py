@@ -15,14 +15,15 @@ escenario=2123660
 # ------------------------------------------------------------
 Cantidad_simulaciones=0
 RESUMENES=[]
-while Cantidad_simulaciones<1:
+while Cantidad_simulaciones<10:
+    ini=time.time()
     Cantidad_simulaciones+=1
     print("Simulacion " + str(Cantidad_simulaciones))
     #inicializar variables
     dia_actual = 1
-    largo_periodo = 15
-    gap = 0.01
-    time_limit = 600
+    largo_periodo = 23
+    gap = 0.005
+    time_limit = 1200
     #Crear resumen
     resumen=0
     resumen = Resumen()
@@ -83,14 +84,19 @@ while Cantidad_simulaciones<1:
             if len(revisado)>=1:
                 print("DIFERENCIA")
                 print(revisado)
-                print(estanques_ocupados)
-                print(tanques_relidad)
                 diferencia=True
+                for i in revisado:
+                    if i[1]=='tanque ocupado':
+                        t="estanque_"+str(i[0].ubicacion.lower())+"_"+str(i[0].id)
+                        for i in dict_diario["dia_"+str(dia_actual)]:
+                            if i["Estanque"]==t:
+                                dict_diario["dia_"+str(dia_actual)].pop(dict_diario["dia_"+str(dia_actual)].index(i))
             else:
                 contador+=1
         if (dia_actual <= 1 or diferencia==True or contador>=10):
             if (dia_actual <= 79):
                 print("Hora de optimizar")
+                resumen.sim+=1
                 estanques_ocupados,tanques_relidad=pasar_tanques_dict(Las_Bodegas,dia_actual,largo_periodo)
                 total_cosechar=pasar_cuartel_dict(Los_Cuarteles)
                 for a in Los_Cuarteles:
@@ -358,14 +364,17 @@ while Cantidad_simulaciones<1:
         resumen.costo_sobras+=C
     resumen.dict_dia=[Cosecha_dia_ex,trab_dia_ex,fermentado_dia_ex]
     resumen.largo=largo_periodo
+    fin = time.time()
+    resumen.time=fin-ini
     RESUMENES.append(resumen)
-    print(RESUMENES)
-fin = time.time()
+
+    
+
 print(fin-inicio) # 1.0005340576171875
 # ------------------------------------------------------------
 #CREAR EXCEL
 nomb="solucion_"+str(largo_periodo)+"d_gap"+str(gap)
-crear_excel(nomb,RESUMENES,fin-inicio)
+crear_excel(nomb,RESUMENES)
 # ------------------------------------------------------------
 #DEVOLVER FEEDBACK
 
