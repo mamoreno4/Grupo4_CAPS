@@ -182,7 +182,7 @@ class Resumen:
         self.dict_dia=[]
         self.largo=0
         self.time=0
-        self.simulacion=0
+        self.sim=0
         for i in range(200):
             self.dias[i]=[]
         pass
