@@ -10,6 +10,7 @@ from datetime import datetime
 
 
 #archivo con las clases y funciones del main
+#Clase cuartel, considera los datos de cada cuartel
 class Cuartel:
 
     def __init__(self, listav):
@@ -25,12 +26,15 @@ class Cuartel:
         self.costo_hora=listav[8]
         self.transporte={"Machali":listav[9],"Chepica":listav[10],"Nancagua":listav[11]}
         self.despreciacion={1000:[0.8,0.8875,0.95,0.9875,1,0.9833,0.9333,0.85],3000:[0.6,0.775,0.9,0.975,1,0.9667,0.8667,0.7],6000:[0.1,0.4938,0.775,0.9438,1,0.9111,0.6444,0.2]}
+    #agrega cosecha a la lista de cosechas del cuartel
     def agregar_cosecha(self,dia,cantidad_bodega):
         self.cosecha_por_dia[dia].append(cantidad_bodega)
         pass
+    #calcula la cantidad cosechable del cuartel
     def set_cosechable(self,cosechable):
         self.cosechable=cosechable
         pass
+    #calcula el factor de depreciacion del cuartel
     def gen_desp(self,dia,precio):
         desp=1
         for i in self.cosecha_por_dia[dia]:
@@ -42,7 +46,7 @@ class Cuartel:
     def __repr__(self):
         return "Cuartel {}".format(self.id)
     
-
+#Clase Bodega, considera los datos de cada bodega
 class Bodega:
     def __init__(self,ubicacion_tanques,nombre):
         self.id_tanque=0
@@ -55,23 +59,24 @@ class Bodega:
             T=Tanque(Tanq[1],self.ubicacion,Tanq[0])
             self.agregar_tanque_disponible(T)
         pass
+    #Devuelve el tanque con el id ingresado
     def devolver_tanque_id(self,id):
         for i in self.tanques:
             if i.id==id:
                 return i
         return None
-    
+    #Agrega un tanque a la lista de tanques disponibles
     def agregar_tanque_disponible(self,tanque):
         self.tanques.append(tanque)
         self.tanques_disponibles.append(tanque)
         pass
-
+    #Agregra un tanque a la lista de tanques fermentando
     def agregar_tanque_fermentando(self,tanque):
         self.tanques_disponibles.remove(tanque)
         self.tanques_fermentando.append(tanque)
         #print("Se agrega tanque {} a fermentar".format(tanque.id))
         pass
-    
+    #Devuelve la cantidad fermentada en el dia
     def revisar_tanques(self,dia):
         salidas=[]
         self.tanques_disponibles=[]
@@ -86,7 +91,7 @@ class Bodega:
                 else:
                     self.tanques_fermentando.append(i)
         return salidas
-    
+    #Devuelve la capacidad de los tanques disponibles
     def tanques_capacidad(self,cap):
         disp=[]
         for i in self.tanques_disponibles:
@@ -97,7 +102,7 @@ class Bodega:
     def __repr__(self):
         return "Bodega {}".format(self.ubicacion)
     
-
+#Clase Tanque, considera los datos de cada tanque
 class Tanque:
 
     def __init__(self,capacidad,ubicacion,id):
@@ -115,7 +120,7 @@ class Tanque:
         self.ubicacion=ubicacion
         self.generado=0
         pass
-
+    #Pone el tanque en estado fermentando, y le pasa los datos de la fermentación a la función generar_dia
     def fermentar(self,cantidad,dia,variedad,precio,distr):
         if self.estado=="Disponible":
             self.estado="Fermentando"
@@ -130,7 +135,7 @@ class Tanque:
         else:
             print("Error: tanque no Disponible")
             pass
-        
+    #Vacía el tanque y devuelve los datos de la fermentación
     def vaciar_tanque(self):
         dias_fermentando=self.dia_termino-self.dia_inicial
         fermentado=[self.cantidad_fermentado, self.variedad_fermentando, dias_fermentando, self.precio]
@@ -141,7 +146,7 @@ class Tanque:
         self.estado="Disponible"
         self.generado=0
         return fermentado
-    
+    #Genera un dia aleatorio de fermentacion
     def generar_dia(self,variedad,distr):
         n=distr.loc[variedad][1]
         p=distr.loc[variedad][2]
@@ -153,7 +158,7 @@ class Tanque:
         return "Tanque {}".format(self.id)+" de la bodega {}".format(self.ubicacion)
     
 
-#Revisar que mas poner en resumen
+#Resumen de la simulación
 class Resumen:
 
     def __init__(self):
@@ -186,10 +191,11 @@ class Resumen:
         for i in range(200):
             self.dias[i]=[]
         pass
-
+    #agrega un dia a la lista de dias
     def agregar_dia(self,dia):
         self.dias[dia]=[]
         pass
+    #agrega cosecha a la lista de cosechas
     def agregar_cosechaT(self,cuarteles):
         for i in cuarteles:
             self.total_cosechable+=i.cosechable
@@ -208,6 +214,7 @@ class Resumen:
     def agregar_tanque(self, dia, cantidad):
         self.dias[dia].append("El dia"+ dia +" se agrego a tanque la cantidad de "+ cantidad)
         pass
+    #Genera los promedios de los datos de los dias
     def gen_promedio(self):
         Ganancias_COSTO = self.ganancias-self.costo_dias-self.costo_sobras-self.costo_transporte-self.costo_trabajo
 
@@ -223,7 +230,7 @@ class Resumen:
             Promedios[p].append(Promedi)
             p+=1
         return Promedios
-
+    #Imprime los datos de los dias
     def imprimir_resumen(self):
         f_total_1000 = 0
         f_total_3000 = 0
@@ -264,14 +271,16 @@ class Resumen:
         print("El total final de sobras con precio 1000 es {}".format(s_total_1000))
         print("El total final de sobras con precio 3000 es {}".format(s_total_3000))
         print("El total final de sobras con precio 6000 es {}".format(s_total_6000))
-
+#Crea el excel con los datos de los dias
 def crear_excel(nombre_archivo,lista_resumenes):
-
+    #Toma la fecha y hora actual para crear la carpeta
     now = datetime.now()
     current_time = now.strftime("%H,%M,%S")
+    #Crea la carpeta con el nombre del archivo y la fecha y hora
     path = './soluciones_implementacion/'+nombre_archivo+"_"+current_time
     os.makedirs(path)
     os.chdir(path)
+    #Crea el excel con los datos de los dias
     for i in lista_resumenes:
         df_cosecha = pd.DataFrame({'Dia': i.dict_dia[0][0], 'Cuartel': i.dict_dia[0][1], 'cosecha': i.dict_dia[0][2]})
         df_trabajadores = pd.DataFrame({'Dia': i.dict_dia[1][0], 'Cuartel': i.dict_dia[1][1], 'Valor': i.dict_dia[1][2]})
@@ -329,83 +338,7 @@ def crear_excel(nombre_archivo,lista_resumenes):
         c+=1
     wb.save(nombre)
     wb.close()
-# funcion para llenar los tanques version 1
-def fill_tanks(tanks, liquid):
-    # iniciar variables
-    best_combination = None
-    best_leftover = float('inf')
-    min_tanks_used = float('inf')
-    # iterar sobre todas las combinaciones de tanques
-    for n in range(1, len(tanks) + 1):
-        for combination in itertools.combinations(tanks, n):
-            # Calculate the total capacity of the tanks
-            total_capacity = sum(capacity for _, capacity in combination)
-            
-            if total_capacity < liquid:
-                continue
-
-            remaining = liquid
-            leftover = 0
-            fill_levels = []
-            # Fill the tanks
-            for tank, capacity in combination:
-                fill_level = min(max(remaining / total_capacity, 0.75), 0.95)
-                fill_amount = fill_level * capacity
-                fill_levels.append((tank, fill_amount))
-                remaining -= fill_amount
-                leftover += capacity - fill_amount
-            # Check if this is the best combination so far
-            if (remaining == 0 or (remaining>0 and remaining<liquid*0.001)) and leftover < best_leftover and n <= min_tanks_used:
-                best_combination = fill_levels
-                best_leftover = leftover
-                min_tanks_used = n
-
-    return best_combination
-
-# funcion para llenar los tanques version 2(desechada)
-def find_combination(tanks,liquid):
-    # iniciar variables
-    n = len(tanks)
-    memo = {}
-    # funcion recursiva
-    def dp(liquid, idx, num_tanks):
-        # caso base
-        if idx == n:
-            return float('inf'), {}
-
-        if (liquid, idx, num_tanks) in memo:
-            return memo[(liquid, idx, num_tanks)]
-
-        tank_name, capacity = tanks[idx]
-        max_fill = int(capacity * 0.95)
-        min_fill = int(capacity * 0.75)
-
-        best_leftovers = float('inf')
-        best_combination = {}
-        # iterar sobre todas las combinaciones de tanques
-        for fill_amount in range(min_fill, max_fill + 1):
-            # Calculate the total capacity of the tanks
-            if fill_amount <= liquid:
-                remaining_liquid = liquid - fill_amount
-                new_leftovers, combination = dp(remaining_liquid, idx + 1, num_tanks + 1)
-                new_leftovers += capacity - fill_amount
-                # Check if this is the best combination so far
-                if new_leftovers < best_leftovers:
-                    best_leftovers = new_leftovers
-                    best_combination = combination.copy()
-                    best_combination[tank_name] = fill_amount
-        # Check if this is the best combination so far
-        if num_tanks < best_leftovers:
-            # set memo
-            memo[(liquid, idx, num_tanks)] = (num_tanks, best_combination)
-            return num_tanks, best_combination
-        # set memo
-        memo[(liquid, idx, num_tanks)] = (best_leftovers, best_combination)
-        return best_leftovers, best_combination
-
-    _, best_combination = dp(liquid, 0, 0)
-    return best_combination
-# funcion para llenar los tanques version 3
+#encuentra la mejor combinacion de tanques para un liquido
 def encontrar_combinacion_liquido(liquido, tanques):
     # Inicializar variables
     mejor_combinacion = None
@@ -427,7 +360,7 @@ def encontrar_combinacion_liquido(liquido, tanques):
                     mejor_combinacion = combo
     return mejor_combinacion
 
-# funcion para llenar los tanques version 3
+# funcion para llenar los tanques version final
 
 def llenar_tanques(liquido_total, tanques):
     # Ordenar los tanques por capacidad (de mayor a menor)
@@ -463,8 +396,7 @@ def llenar_tanques(liquido_total, tanques):
             break
     
     return liquido_tanques
-# funcion para llenar los tanques version 3
-
+# funcion para llenar los tanques version final
 def comb_liquido(tanques, liquido):
     # Inicializar variables
     cantidad_liquido_tanques=None
@@ -476,7 +408,7 @@ def comb_liquido(tanques, liquido):
         print(com_best)
         cantidad_liquido_tanques = llenar_tanques(liquido, com_best)
     return cantidad_liquido_tanques
-
+#Pasar los tanques a un diccionario
 def pasar_tanques_a_diario(tanques_ocupados):
     diccionario_datos_estanques = tanques_ocupados.to_dict(orient='records')
     dic_tanques_dia={}
@@ -489,7 +421,7 @@ def pasar_tanques_a_diario(tanques_ocupados):
         else:
             dic_tanques_dia[i["Dia"]]=[i]
     return dic_tanques_dia
-
+#funcion para revisar si los tanques estan ocupados o desocupados comparado con la planificacion
 def revisar_input(dia_dict,tanques_ocupados,bodegas,dia):
     tanques_problemas=[]
     di="dia_"+str(dia)
@@ -515,7 +447,7 @@ def revisar_input(dia_dict,tanques_ocupados,bodegas,dia):
     return tanques_problemas
 
      
-
+#Pasar los tanques a un diccionario
 def pasar_tanques_dict(BODEGAS,dia,largo):
     tanques_ocupados={}
     tanques_realidad={}
@@ -534,6 +466,7 @@ def pasar_tanques_dict(BODEGAS,dia,largo):
                 tanques_realidad[nombre]["dia_"+str(i)]=1
                 
     return tanques_ocupados,tanques_realidad
+#Pasar los cuartel a un diccionario
 def pasar_cuartel_dict(cuarteles):
     cosechar={}
     for i in cuarteles:
@@ -541,7 +474,7 @@ def pasar_cuartel_dict(cuarteles):
         cosechar[nombre]=max(round(i.cosechable/i.factor,2),0)
     return cosechar
 
-
+#Creas las clases bases de los datos
 def crear_clases():
     #Cargar datos
     Distribuciones = pd.read_excel('./../Distribuciones/dist.xlsx', index_col=0)
