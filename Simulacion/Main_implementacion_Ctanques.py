@@ -15,7 +15,7 @@ escenario=2123660
 # ------------------------------------------------------------
 Cantidad_simulaciones=0
 RESUMENES=[]
-while Cantidad_simulaciones<1:
+while Cantidad_simulaciones<10:
     ini=time.time()
     Cantidad_simulaciones+=1
     print("Simulacion " + str(Cantidad_simulaciones))

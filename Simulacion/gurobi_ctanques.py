@@ -10,11 +10,11 @@ import itertools
 
 
 # %%
-datos1 = pd.read_excel('Datos base G4.xlsx', sheet_name='Datos base G4')
-nancagua = pd.read_excel('Datos base G4.xlsx', sheet_name='Bodega Nancagua')
-machali = pd.read_excel('Datos base G4.xlsx', sheet_name='Bodega Machali')
-chepica = pd.read_excel('Datos base G4.xlsx', sheet_name='Bodega Chepica')
-transporte = pd.read_excel('Datos base G4.xlsx', sheet_name='Transporte')
+datos1 = pd.read_excel('Datos base G4c.xlsx', sheet_name='Datos base G4')
+nancagua = pd.read_excel('Datos base G4c.xlsx', sheet_name='Bodega Nancagua')
+machali = pd.read_excel('Datos base G4c.xlsx', sheet_name='Bodega Machali')
+chepica = pd.read_excel('Datos base G4c.xlsx', sheet_name='Bodega Chepica')
+transporte = pd.read_excel('Datos base G4c.xlsx', sheet_name='Transporte')
 
 # %%
 costo_transporte = {}
@@ -79,7 +79,7 @@ cosecha_cuarteles=pd.read_excel('./../Distribuciones/estimado cosecha.xlsx')
 cosecha_cuarteles=cosecha_cuarteles.values.tolist()
 # %%
 for ID in range(1, 61):
-    total_cosechar[f'cuartel_{int(ID)}'] = cosecha_cuarteles[ID-1][0]*0.85
+    total_cosechar[f'cuartel_{int(ID)}'] = cosecha_cuarteles[ID-1][0]
 for ID, Precio, Factor, Variedad, Dia_inicial, Dia_final in zip(datos1['ID'], datos1['Precio'], datos1['Factor'], datos1['Variedad'], datos1['Dia_inicial'], datos1['Dia_final']):
     precio_venta[f'cuartel_{ID}'] = Precio
     if Precio == 1000:
